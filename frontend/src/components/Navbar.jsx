@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Heading } from "./Heading";
 import { Link, useLocation } from "react-router-dom";
-import Sidebar from "./SideBar";
+import Sidebar from "./Sidebar";
 import SearchBox from "./Search";
 
 

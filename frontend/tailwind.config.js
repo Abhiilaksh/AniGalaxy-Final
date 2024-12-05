@@ -1,9 +1,10 @@
-const withMT = require("@material-tailwind/react/utils/withMT");
- 
-module.exports = withMT({
+import withMT from "@material-tailwind/react/utils/withMT";
+import lineClamp from "@tailwindcss/line-clamp";
+
+export default withMT({
   content: ["./index.html", "./src/**/*.{vue,js,ts,jsx,tsx}"],
   theme: {
     extend: {},
   },
-  plugins: [require('@tailwindcss/line-clamp')],
+  plugins: [lineClamp],
 });

@@ -5,6 +5,7 @@ import { Heading } from "../components/Heading";
 import { Link } from "react-router-dom";
 import { RelatedAnime } from "../components/RelatedAnime";
 import { RecommendedAnime } from "../components/RecommendedAnime";
+import { Loader } from "../components/Spinner";
 
 
 export const AnimeInfo = () => {
@@ -15,10 +16,12 @@ export const AnimeInfo = () => {
   const [moreInfo, setMoreInfo] = useState({});
   const[relatedAnime,setRelatedAnime]=useState([])
   const[recommendedAnime,setRecommendedAnime]=useState([])
+  const[loading,setLoading]=useState(false)
 
   useEffect(() => {
     const fetchInfo = async () => {
       try {
+        setLoading(true)
         const response = await fetch(
           `https://aniwatch-api-abhiilakshs-projects.vercel.app/api/v2/hianime/anime/${id}`
         );
@@ -37,15 +40,18 @@ export const AnimeInfo = () => {
       } catch (error) {
         console.error("Error fetching anime data:", error);
       }
+      finally{
+        setLoading(false)
+      }
     };
     fetchInfo();
   }, [id]);
 
   return (
     <>
-      <div className="relative w-full h-[600px] rounded-lg">
+     {loading?(<Loader/>):( <><div className="relative w-full h-[600px] rounded-lg">
         <div
-          className="absolute inset-0 bg-cover bg-center filter blur-xl"
+          className="absolute inset-0 bg-cover bg-center filter blur-md"
           style={{ backgroundImage: `url(${photo1})` }}
         >
 
@@ -116,7 +122,7 @@ export const AnimeInfo = () => {
       </div>
       <div>
         <RecommendedAnime data={recommendedAnime}></RecommendedAnime>
-      </div>
+      </div></>)}
     </>
   );
 };

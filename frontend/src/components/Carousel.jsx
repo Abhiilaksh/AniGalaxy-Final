@@ -1,4 +1,5 @@
 import { Carousel, Typography, Button,IconButton } from "@material-tailwind/react";
+import { Link } from "react-router-dom";
 
 
 const SlideShow = ({ animeData }) => {
@@ -101,13 +102,14 @@ const SlideShow = ({ animeData }) => {
               >
                 Watch
               </Button>
+              <Link to={`/anime/${anime.id}`}>
               <Button
                 size="lg"
                 color="white"
                 className="text-sm sm:text-base lg:text-lg xl:text-xl ml-4 p-2 sm:px-4" 
               >
                 Info
-              </Button>
+              </Button></Link>
             </div>
           </div>
         </div>

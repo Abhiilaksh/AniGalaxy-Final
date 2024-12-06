@@ -12,6 +12,8 @@ import Navbar from './components/navbar';
 import MostPopular from './pages/MostPopular';
 import { TV } from './pages/TV';
 import { Movies } from './pages/Movies';
+import { AnimeInfo } from './pages/AnimeInfo';
+import { SearchResult } from './pages/SearchResults';
 
 function App() {
 
@@ -21,6 +23,8 @@ function App() {
         <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/search/:query" element={<SearchResult />} />
+          <Route path="/anime/:id" element={<AnimeInfo />} />
           <Route path="/movies" element={<Movies/>}/>
           <Route path="/tv" element={<TV/>} />
           <Route path="/most-popular" element={<MostPopular/>} />

@@ -1,17 +1,25 @@
 import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import 'font-awesome/css/font-awesome.min.css';
-
 
 const SearchBox = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setSearchTerm(e.target.value);
   };
 
   const handleSearch = () => {
-    console.log("Searching for:", searchTerm);
-    
+    if (searchTerm.trim()) {
+      navigate(`/search/${searchTerm}`);
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
   };
 
   return (
@@ -22,6 +30,7 @@ const SearchBox = () => {
         className="w-full py-2 px-4 pl-10 border rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
         value={searchTerm}
         onChange={handleChange}
+        onKeyDown={handleKeyDown} // Detect Enter key
       />
       <button
         className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"

@@ -15,7 +15,7 @@ import { Movies } from './pages/Movies';
 import { AnimeInfo } from './pages/AnimeInfo';
 import { SearchResult } from './pages/SearchResults';
 import { Analytics } from '@vercel/analytics/react';
-import { Watch } from './pages/watch';
+import { Watch } from './pages/WatchAnime';
 
 function App() {
 
@@ -25,7 +25,7 @@ function App() {
         <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/watch/:anime" element={<Watch/>} />
+          <Route path="/watch/:anime" element={<Watch/>}/>
           <Route path="/search/:query" element={<SearchResult />} />
           <Route path="/anime/:id" element={<AnimeInfo />} />
           <Route path="/movies" element={<Movies/>}/>

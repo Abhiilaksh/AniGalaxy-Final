@@ -70,14 +70,14 @@ const SlideShow = ({ animeData }) => {
         </IconButton>
       )}>
       {animeData.map((anime, index) => (
-        <div key={index} className="relative h-72 sm:h-[500px] lg:h-[600px] xl:h-[700px] h-[400px]">
+        <div key={index} className="relative h-[275px] sm:h-[500px] lg:h-[600px] xl:h-[700px] h-[400px]">
           <img
             src={anime.poster}
             alt={anime.name}
             className="h-full w-full "
           />
            <Link to={`/anime/${anime.id}`}>
-          <div className="absolute inset-0 flex items-center justify-start bg-black/[.30] md:bg-black/[.35] pl-8 sm:pl-16">
+          <div className="absolute inset-0 flex items-center justify-start bg-black/[.25] md:bg-black/[.35] pl-8 sm:pl-16">
          
 
             <div className="text-left max-w-xl px-5 mr-12 ml-2 ">

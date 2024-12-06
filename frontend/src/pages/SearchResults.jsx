@@ -16,7 +16,7 @@ export const SearchResult=()=>{
     },[query])
     return(
         <>
-        <div className="pt-32 flex justify-center"><Heading label={`Search results for ${query} :`}></Heading></div>
+        <div className=" pt-16 sm:pt-24 flex justify-center"><Heading label={`Search results for ${query} :`}></Heading></div>
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 pt-16 sm:pt-24 sm:pl-24">
           {result.map((anime) => (
             <AnimeCard key={anime.id} title={anime.name} image={anime.poster} id={anime.id}/>

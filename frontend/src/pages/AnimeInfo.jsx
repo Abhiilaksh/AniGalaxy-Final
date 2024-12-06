@@ -8,7 +8,7 @@ export const AnimeInfo = () => {
   const [animeData, setAnimeData] = useState({});
   const [stats, setStats] = useState({});
   const [isMovie, setIsMovie] = useState(false);
-  const [moreInfo, setMoreInfo] = useState({}); // CamelCase
+  const [moreInfo, setMoreInfo] = useState({});
 
   useEffect(() => {
     const fetchInfo = async () => {
@@ -21,7 +21,7 @@ export const AnimeInfo = () => {
         if (result?.data?.anime?.info) {
           const animeInfo = result.data.anime.info;
           setAnimeData(animeInfo);
-          setMoreInfo(result.data.anime.moreInfo); // Updated naming
+          setMoreInfo(result.data.anime.moreInfo);
           setStats(animeInfo.stats || {});
           setIsMovie(animeInfo.type === "Movie");
         }
@@ -34,18 +34,25 @@ export const AnimeInfo = () => {
 
   return (
     <>
-      <div className="relative w-full h-[600px] rounded-lg overflow-hidden">
+      <div className="relative w-full h-[600px] rounded-lg">
         <div
           className="absolute inset-0 bg-cover bg-center filter blur-lg"
           style={{ backgroundImage: `url(${photo1})` }}
         ></div>
-        <div className="absolute inset-0 bg-black bg-opacity-30 flex flex-row text-white pt-[100px] px-16 gap-16">
-          <div className="w-[250px] pt-[50px]">
-            <img src={animeData.poster || ""} alt={animeData.name || "Anime Poster"} />
+        <div className="absolute inset-0 bg-black bg-opacity-30 flex flex-col md:flex-row text-white pt-10 md:pt-[100px] px-4 md:px-16 gap-8 md:gap-16">
+          {/* Image Section */}
+          <div className="w-full md:w-[250px] flex justify-center md:pt-[50px] pt-8">
+            <img
+              className="rounded-lg w-[150px] md:w-[250px] sm:h-[300px]"
+              src={animeData.poster || ""}
+              alt={animeData.name || "Anime Poster"}
+            />
           </div>
-          <div className="flex flex-col">
-            <Heading label={animeData.name || "Loading..."} />
-            <div className="flex flex-row space-x-1 pt-4">
+
+          {/* Info Section */}
+          <div className="flex flex-col w-full">
+          <Heading label={animeData.name}></Heading>
+            <div className="flex flex-wrap space-x-1 pt-4">
               {stats.rating && (
                 <div className="bg-white text-black font-medium text-sm px-4 py-2 rounded shadow-md cursor-pointer transition duration-200 ease-in-out">
                   {stats.rating}
@@ -61,13 +68,13 @@ export const AnimeInfo = () => {
                   {stats.episodes.sub}
                 </div>
               )}
-              {moreInfo?.duration && ( // Added optional chaining for safety
+              {moreInfo?.duration && (
                 <div className="text-white font-medium text-sm px-4 py-2 rounded cursor-pointer transition duration-200 ease-in-out">
                   {moreInfo.duration}
                 </div>
               )}
             </div>
-            <div className="flex flex-row space-x-4 pt-4">
+            <div className="flex flex-wrap space-x-4 pt-4">
               <button className="bg-pink-100 text-black font-medium text-sm px-4 py-4 rounded-2xl shadow-md cursor-pointer transition duration-200 ease-in-out">
                 Watch Now
               </button>

@@ -9,6 +9,9 @@ import { Home } from './pages/Home';
 import Signup from './pages/Signup'
 import { Signin } from './pages/Signin';
 import Navbar from './components/navbar';
+import MostPopular from './pages/MostPopular';
+import { TV } from './pages/TV';
+import { Movies } from './pages/Movies';
 
 function App() {
 
@@ -18,6 +21,9 @@ function App() {
         <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/movies" element={<Movies/>}/>
+          <Route path="/tv" element={<TV/>} />
+          <Route path="/most-popular" element={<MostPopular/>} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/signin" element={<Signin />} />
         </Routes>

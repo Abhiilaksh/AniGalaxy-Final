@@ -4,7 +4,7 @@ export const Watch=()=>{
 const {anime}=useParams();
 return(
     <div>
-        Watch {anime}
+        here is  {anime}
     </div>
 )    
 }

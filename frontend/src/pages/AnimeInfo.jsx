@@ -45,7 +45,7 @@ export const AnimeInfo = () => {
     <>
       <div className="relative w-full h-[600px] rounded-lg">
         <div
-          className="absolute inset-0 bg-cover bg-center filter blur-lg"
+          className="absolute inset-0 bg-cover bg-center filter blur-xl"
           style={{ backgroundImage: `url(${photo1})` }}
         >
 

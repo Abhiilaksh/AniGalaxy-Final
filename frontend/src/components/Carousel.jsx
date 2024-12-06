@@ -6,7 +6,7 @@ const SlideShow = ({ animeData }) => {
   return (
     <Carousel loop autoplay className="rounded-xl"
     navigation={({ setActiveIndex, activeIndex, length }) => (
-        <div className="absolute bottom-4 left-2/4 z-50 flex -translate-x-2/4 gap-2">
+        <div className="absolute bottom-4 left-2/4  flex -translate-x-2/4 gap-2">
           {new Array(length).fill("").map((_, i) => (
             <span
               key={i}
@@ -25,7 +25,7 @@ const SlideShow = ({ animeData }) => {
           size="lg"
           onClick={handlePrev}
           className="!absolute top-2/4 left-4 -translate-y-2/4"
-        >   <div className="ml-[-27px] sm:ml-0">
+        >   <div className="ml-[-10px] sm:ml-0">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -51,7 +51,7 @@ const SlideShow = ({ animeData }) => {
           onClick={handleNext}
           className="!absolute top-2/4 !right-4 -translate-y-2/4"
         >
-            <div className="mr-[-35px] sm:mr-0">
+            <div className="mr-[-25px] sm:mr-0">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -70,18 +70,22 @@ const SlideShow = ({ animeData }) => {
         </IconButton>
       )}>
       {animeData.map((anime, index) => (
-        <div key={index} className="relative h-80 sm:h-[500px] lg:h-[600px] xl:h-[700px] h-[400px]">
+        <div key={index} className="relative h-[270px] sm:h-[500px] lg:h-[600px] xl:h-[700px] h-[400px]">
           <img
             src={anime.poster}
             alt={anime.name}
-            className="h-full w-full object-cover"
+            className="h-full w-full "
           />
-          <div className="absolute inset-0 flex items-center justify-start bg-black/[.55] pl-8 sm:pl-16">
-            <div className="text-left max-w-xl px-6">
+           <Link to={`/anime/${anime.id}`}>
+          <div className="absolute inset-0 flex items-center justify-start bg-black/[.30] md:bg-black/[.35] pl-8 sm:pl-16">
+         
+
+            <div className="text-left max-w-xl px-5 mr-12 ml-2 ">
+            
               <Typography
                 variant="h1"
                 color="white"
-                className="mb-4 text-xl sm:text-3xl md:text-4xl lg:text-5xl pb-4"
+                className="mb-4 text-xl sm:text-3xl md:text-4xl lg:text-5xl pl-2 "
               >
                 {anime.name}
               </Typography>
@@ -90,15 +94,16 @@ const SlideShow = ({ animeData }) => {
               <Typography
                 variant="lead"
                 color="white"
-                className="mb-12 opacity-80  text-sm sm:text-md h-24 w-[500px] overflow-hidden text-ellipsis line-clamp-4 font-semibold leading-relaxed "
+                className="mb-12 opacity-95  text-sm sm:text-md h-24 w-[500px] overflow-hidden text-ellipsis line-clamp-4 font-semibold leading-relaxed "
               >
                 {anime.description}
               </Typography>
               </div>
-              <Button
-                size="lg"
+              <div className="hidden sm:block">
+             <Button
+                size=""
                 color="white"
-                className="text-sm sm:text-base lg:text-lg xl:text-xl p-2 sm:px-4 " 
+                className="text-xs sm:text-base lg:text-lg xl:text-xl p-2 sm:px-4 bg-amber-200" 
               >
                 Watch
               </Button>
@@ -106,12 +111,15 @@ const SlideShow = ({ animeData }) => {
               <Button
                 size="lg"
                 color="white"
-                className="text-sm sm:text-base lg:text-lg xl:text-xl ml-4 p-2 sm:px-4" 
+                className="text-xs sm:text-base lg:text-lg xl:text-xl ml-4 p-2 sm:px-4 bg-lime-300" 
               >
                 Info
               </Button></Link>
+             </div>
             </div>
+            
           </div>
+          </Link>
         </div>
       ))}
     </Carousel>

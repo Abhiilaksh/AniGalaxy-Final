@@ -4,7 +4,7 @@ import SearchBox from "./Search";
 const Sidebar = ({ menu, handleLinkClick, isActive, isLoggedin }) => {
   return (
     menu && (
-      <div className="bg-black bg-opacity-70 backdrop-blur-0 text-white pl-4 py-2 mt-2 rounded-md mr-2">
+      <div className="bg-black bg-opacity-70 backdrop-blur-0 text-white pl-4 py-2 mt-2 rounded-md mr-2 ">
         <ul>
           <li>
             <Link to="/" className={`block py-2 ${isActive('/')}`} onClick={handleLinkClick}>

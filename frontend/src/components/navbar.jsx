@@ -47,7 +47,7 @@ const Navbar = () => {
   const isActive = (path) => location.pathname === path ? ' text-white font-bold' : 'hover:font-semibold';
 
   return (
-    <nav className="fixed top-0 left-0 w-full bg-black bg-opacity-40 backdrop-blur-0 text-white mt-[-18px]  pb-1 z-20">
+    <nav className="fixed top-0 left-0 w-full bg-black bg-opacity-40 backdrop-blur-0 text-white mt-[-18px]  pb-2 z-20">
       {isPhone ? (
         <div className="flex justify-between pt-2">
           <Link to="/" className="pl-2">

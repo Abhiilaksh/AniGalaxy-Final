@@ -77,7 +77,7 @@ const SlideShow = ({ animeData }) => {
             className="h-full w-full "
           />
            <Link to={`/anime/${anime.id}`}>
-          <div className="absolute inset-0 flex items-center justify-start bg-black/[.25] md:bg-black/[.35] pl-8 sm:pl-16">
+          <div className="absolute inset-0 flex items-center justify-start bg-black/[.15] md:bg-black/[.35] pl-8 sm:pl-16">
          
 
             <div className="text-left max-w-xl px-5 mr-12 ml-2 ">
@@ -85,7 +85,7 @@ const SlideShow = ({ animeData }) => {
               <Typography
                 variant="h1"
                 color="white"
-                className="mb-4 text-xl sm:text-3xl md:text-4xl lg:text-5xl pl-2 "
+                className="mb-4 text-xl sm:text-3xl md:text-4xl lg:text-5xl pl-2 font-extrabold"
               >
                 {anime.name}
               </Typography>

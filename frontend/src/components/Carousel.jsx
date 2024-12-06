@@ -70,7 +70,7 @@ const SlideShow = ({ animeData }) => {
         </IconButton>
       )}>
       {animeData.map((anime, index) => (
-        <div key={index} className="relative h-[270px] sm:h-[500px] lg:h-[600px] xl:h-[700px] h-[400px]">
+        <div key={index} className="relative h-72 sm:h-[500px] lg:h-[600px] xl:h-[700px] h-[400px]">
           <img
             src={anime.poster}
             alt={anime.name}

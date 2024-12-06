@@ -14,6 +14,7 @@ import { TV } from './pages/TV';
 import { Movies } from './pages/Movies';
 import { AnimeInfo } from './pages/AnimeInfo';
 import { SearchResult } from './pages/SearchResults';
+import { Analytics } from '@vercel/analytics/react';
 
 function App() {
 
@@ -31,6 +32,7 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/signin" element={<Signin />} />
         </Routes>
+        <Analytics />
       </BrowserRouter>
     </div>
   );

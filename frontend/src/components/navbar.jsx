@@ -49,7 +49,7 @@ const Navbar = () => {
   return (
     <nav className="fixed top-0 left-0 w-full bg-black bg-opacity-40 backdrop-blur-0 text-white mt-[-18px]  pb-1 z-20">
       {isPhone ? (
-        <div className="flex justify-between">
+        <div className="flex justify-between pt-3">
           <Link to="/" className="pl-2">
             <Heading label="AniGalaxy" />
           </Link>

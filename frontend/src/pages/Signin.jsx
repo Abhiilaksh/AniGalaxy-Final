@@ -34,7 +34,7 @@ export const Signin = () => {
             {videoLoaded && (
                 <div className="flex flex-col justify-center relative z-10 mt-4">
                     <div className="rounded-lg bg-white bg-opacity-70 backdrop-blur-none w-80 text-center p-2 h-max px-4">
-                        <Heading label={"Sign in"} color={"black"} />
+                        <Heading label={"Sign in"} color={"black"} size={"2xl"} />
                         <SubHeading label={"Enter your credentials to access your account"} />
                         <InputBox placeholder="johndoe@gmail.com" label={"Email"} />
                         <InputBox placeholder="123456" label={"Password"} />

@@ -16,7 +16,7 @@ const Navbar = () => {
 
   useEffect(() => {
     const checkIsPhone = () => {
-      setIsPhone(window.innerWidth <= 768);
+      setIsPhone(window.innerWidth <= 1024);
     };
     checkIsPhone();
     window.addEventListener("resize", checkIsPhone);
@@ -51,7 +51,7 @@ const Navbar = () => {
       {isPhone ? (
         <div className="flex justify-between pt-2">
           <Link to="/" className="pl-2">
-            <Heading label="AniGalaxy" />
+            <Heading label="AniGalaxy" size="2xl" />
           </Link>
           <button onClick={handleMenuToggle}>
             <div className="pr-4 pt-4">

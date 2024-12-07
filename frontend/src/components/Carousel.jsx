@@ -85,7 +85,7 @@ const SlideShow = ({ animeData }) => {
               <Typography
                 variant="h1"
                 color="white"
-                className="mb-4 text-xl sm:text-3xl md:text-4xl lg:text-5xl pl-2 font-extrabold"
+                className="mb-4 text-xl sm:text-3xl md:text-4xl lg:text-5xl pl-1 font-extrabold"
               >
                 {anime.name}
               </Typography>
@@ -94,7 +94,7 @@ const SlideShow = ({ animeData }) => {
               <Typography
                 variant="lead"
                 color="white"
-                className="mb-12 opacity-95  text-sm sm:text-md h-24 w-[500px] overflow-hidden text-ellipsis line-clamp-4 font-semibold leading-relaxed "
+                className="mb-12 opacity-100  text-sm sm:text-md h-24 w-[500px] overflow-hidden text-ellipsis line-clamp-4 font-semibold leading-relaxed "
               >
                 {anime.description}
               </Typography>

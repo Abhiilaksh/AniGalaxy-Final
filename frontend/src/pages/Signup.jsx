@@ -41,7 +41,7 @@ const Signup = () => {
       {videoLoaded && (
         <div className="flex flex-col justify-center z-10 mt-8">
           <div className="rounded-lg bg-white bg-opacity-70 backdrop-blur-0 w-80 text-center p-2 h-max px-4 backdrop-blur">
-            <Heading label={"Sign up"} color={"black"} />
+          <Heading label={"Sign in"} color={"black"} size={"2xl"} />
             <SubHeading label={"Enter your information to create an account"} />
             <InputBox
               onChange={(e) => {

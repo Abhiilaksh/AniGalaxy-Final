@@ -61,7 +61,7 @@ export const AnimeInfo = () => {
           <div className="w-full md:w-[350px] flex justify-center md:pt-[50px] pt-4">
             <img
               className="rounded-lg w-[150px] md:w-[250px] sm:h-[300px]"
-              src={animeData.poster || ""}
+              src={animeData.poster || {anime}}
               alt={animeData.name || "Anime Poster"}
             />
           </div>
@@ -106,17 +106,37 @@ export const AnimeInfo = () => {
               </p>
             </div>
           </div>
-          <div className="hidden 2xl:flex flex-col w-[450px] h-96 p-4  mt-16  text-justify bg-black/[0.2] rounded-lg ">
-              <div>Japanese: {moreInfo.japanese}</div>
-              <div>Aired: {moreInfo.aired}</div>
-              <div>Premiered: {moreInfo.premiered}</div>
-              <div>Status: {moreInfo.status}</div>
-              <div>Duration: {moreInfo.duration}</div>
-              <div>MAL Score: {moreInfo.malscore === "?" ? "N/A" : moreInfo.malscore}</div>
-              <div>Genres: {moreInfo.genres?.join(",")}</div>
-              <div>Studios: {moreInfo.studios}</div>
-              <div>Producers: {moreInfo.producers?.join(", ")}</div>
-            </div>
+          <div className="hidden 2xl:flex flex-col w-[600px] p-6 mt-8 text-justify bg-black/20 rounded-lg shadow-md backdrop-blur-sm">
+  <div className="font-semibold text-xl mb-4">Anime Details:</div>
+  <div className="mb-2">
+    <span className="font-medium">Japanese:</span> {moreInfo.japanese || "N/A"}
+  </div>
+  <div className="mb-2">
+    <span className="font-medium">Aired:</span> {moreInfo.aired || "N/A"}
+  </div>
+  <div className="mb-2">
+    <span className="font-medium">Premiered:</span> {moreInfo.premiered || "N/A"}
+  </div>
+  <div className="mb-2">
+    <span className="font-medium">Status:</span> {moreInfo.status || "N/A"}
+  </div>
+  <div className="mb-2">
+    <span className="font-medium">Duration:</span> {moreInfo.duration || "N/A"}
+  </div>
+  <div className="mb-2">
+    <span className="font-medium">MAL Score:</span> {moreInfo.malscore === "?" ? "N/A" : moreInfo.malscore || "N/A"}
+  </div>
+  <div className="mb-2">
+    <span className="font-medium">Genres:</span> {moreInfo.genres?.join(", ") || "N/A"}
+  </div>
+  <div className="mb-2">
+    <span className="font-medium">Studios:</span> {moreInfo.studios || "N/A"}
+  </div>
+  <div className="mb-2">
+    <span className="font-medium">Producers:</span> {moreInfo.producers?.join(", ") || "N/A"}
+  </div>
+</div>
+
         </div>
       </div>
       <div>

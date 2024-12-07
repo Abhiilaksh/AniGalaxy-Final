@@ -6,7 +6,7 @@ import { InputBox } from "../components/InputBox";
 import { SubHeading } from "../components/SubHeading";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { backgroundVideo } from "../assets/video";
+import { anime } from "../assets/photo"; // Import your image here
 import { Loader } from "../components/Spinner";
 
 const Signup = () => {
@@ -14,34 +14,32 @@ const Signup = () => {
   const [lastName, setLastName] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [videoLoaded, setVideoLoaded] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
   const navigate = useNavigate();
 
-  const handleVideoLoaded = () => {
-    setVideoLoaded(true);
+  const handleImageLoaded = () => {
+    setImageLoaded(true);
   };
 
   return (
     <div className="relative w-full h-screen flex justify-center">
-      {!videoLoaded && (
+      {!imageLoaded && (
         <div className="absolute inset-0 flex items-center justify-center z-20">
           <Loader />
         </div>
       )}
-      <video
-        autoPlay
-        loop
-        muted
-        className="absolute inset-0 w-full h-full object-cover"
-        onLoadedData={handleVideoLoaded}
-      >
-        <source src={backgroundVideo} type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
-      {videoLoaded && (
+      <img
+        src={anime}
+        alt="Background"
+        className={`absolute inset-0 w-full h-full object-cover ${
+          imageLoaded ? "opacity-100" : "opacity-0"
+        } transition-opacity duration-500 blur-md`}
+        onLoad={handleImageLoaded}
+      />
+      {imageLoaded && (
         <div className="flex flex-col justify-center z-10 mt-8">
-          <div className="rounded-lg bg-white bg-opacity-70 backdrop-blur-0 w-80 text-center p-2 h-max px-4 backdrop-blur">
-          <Heading label={"Sign in"} color={"black"} size={"2xl"} />
+          <div className="rounded-lg bg-white bg-opacity-70 backdrop-blur-md w-80 text-center p-2 h-max px-4">
+            <Heading label={"Sign up"} color={"black"} size={"2xl"} />
             <SubHeading label={"Enter your information to create an account"} />
             <InputBox
               onChange={(e) => {

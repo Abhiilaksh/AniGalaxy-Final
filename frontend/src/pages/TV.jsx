@@ -1,6 +1,7 @@
 import { AnimeCard } from "../components/AnimeCard"
 import { useState,useEffect } from "react"
 import { Loader } from "../components/Spinner";
+const animeKey = import.meta.env.VITE_ANIME_KEY;
 export const TV=()=>{
     const [animeData,setAnimeData]=useState([]);
     const [loading,setLoading]=useState(false);
@@ -8,7 +9,7 @@ export const TV=()=>{
         const fetchTv=async ()=>{
             try{
                 setLoading(true);
-            const response=await fetch ("https://aniwatch-api-abhiilakshs-projects.vercel.app/api/v2/hianime/category/tv");
+                const response = await fetch(`${animeKey}category/tv`);
             const result=await response.json();
             setAnimeData(result.data.animes)
             console.log(result.data.animes)

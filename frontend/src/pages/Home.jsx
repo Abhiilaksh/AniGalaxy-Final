@@ -1,6 +1,7 @@
 import SlideShow from "../components/Carousel";
 import { useEffect, useState } from "react";
 import { Loader } from "../components/Spinner";
+const animeKey = import.meta.env.VITE_ANIME_KEY;
 
 export const Home = () => {
     const [slide, setSlide] = useState([]);
@@ -10,7 +11,7 @@ export const Home = () => {
         const fetchData = async () => {
             try {
                 setLoading(true); // Start loading
-                const response = await fetch("https://aniwatch-api-abhiilakshs-projects.vercel.app/api/v2/hianime/home");
+                const response = await fetch(`${animeKey}home`);
                 const data = await response.json();
                 setSlide(data.data.spotlightAnimes);
             } catch (error) {

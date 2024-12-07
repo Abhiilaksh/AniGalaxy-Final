@@ -3,6 +3,7 @@ import { useState,useEffect } from "react";
 import { AnimeCard } from "../components/AnimeCard";
 import { Heading } from "../components/Heading";
 import { Loader } from "../components/Spinner";
+const animeKey = import.meta.env.VITE_ANIME_KEY;
 export const SearchResult=()=>{
     const {query}=useParams();
     const [result,setResult]=useState([])
@@ -11,7 +12,7 @@ export const SearchResult=()=>{
         const fetchResult=async()=>{
           try{
             setLoading(true);
-            const response=await fetch(`https://aniwatch-api-abhiilakshs-projects.vercel.app/api/v2/hianime/search?q=${query}`)
+            const response=await fetch(`${animeKey}search?q=${query}`)
             const data=await response.json();
             setResult(data.data.animes);
             console.log(result);

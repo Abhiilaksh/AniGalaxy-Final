@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { AnimeCard } from "../components/AnimeCard";
 import { Loader } from "../components/Spinner";
+const animeKey = import.meta.env.VITE_ANIME_KEY;
 
 const MostPopular = () => {
     const [animeData, setAnimeData] = useState([]);
@@ -10,7 +11,7 @@ const MostPopular = () => {
         const fetchPopular = async () => {
             try {
                 setLoading(true);
-                const response = await fetch("https://aniwatch-api-abhiilakshs-projects.vercel.app/api/v2/hianime/category/most-popular");
+                const response = await fetch(`${animeKey}category/most-popular`);
                 if (!response.ok) {
                     throw new Error("Failed to fetch data");
                 }

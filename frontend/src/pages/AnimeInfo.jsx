@@ -17,13 +17,14 @@ export const AnimeInfo = () => {
   const[relatedAnime,setRelatedAnime]=useState([])
   const[recommendedAnime,setRecommendedAnime]=useState([])
   const[loading,setLoading]=useState(false)
+  const animeKey = import.meta.env.VITE_ANIME_KEY;
 
   useEffect(() => {
     const fetchInfo = async () => {
       try {
         setLoading(true)
         const response = await fetch(
-          `https://aniwatch-api-abhiilakshs-projects.vercel.app/api/v2/hianime/anime/${id}`
+          `${animeKey}anime/${id}`
         );
         const result = await response.json();
 

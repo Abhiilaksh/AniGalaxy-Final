@@ -100,13 +100,13 @@ const SlideShow = ({ animeData }) => {
               </Typography>
               </div>
               <div className="hidden sm:block">
-             <Button
+             <Link to={`/watch/${anime.id}`}><Button
                 size=""
                 color="white"
                 className="text-xs sm:text-base lg:text-lg xl:text-xl p-2 sm:px-4 bg-amber-200" 
               >
                 Watch
-              </Button>
+              </Button></Link>
               <Link to={`/anime/${anime.id}`}>
               <Button
                 size="lg"

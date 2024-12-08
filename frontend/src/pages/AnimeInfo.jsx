@@ -52,7 +52,7 @@ export const AnimeInfo = () => {
     <>
      {loading?(<Loader/>):( <><div className="relative w-full h-[600px]  rounded-lg">
         <div
-          className="absolute inset-0 bg-cover bg-center filter blur-md "
+          className="absolute inset-0 bg-cover bg-center filter blur-lg "
           style={{ backgroundImage: `url(${animeData.poster})` }}
         >
 

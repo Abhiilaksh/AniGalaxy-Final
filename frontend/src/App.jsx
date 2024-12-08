@@ -25,7 +25,7 @@ function App() {
         <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/watch/:anime" element={<Watch/>}/>
+          <Route path="/watch/:anime/" element={<Watch/>}/>
           <Route path="/search/:query" element={<SearchResult />} />
           <Route path="/anime/:id" element={<AnimeInfo />} />
           <Route path="/movies" element={<Movies/>}/>

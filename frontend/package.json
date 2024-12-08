@@ -17,13 +17,18 @@
     "dotenv": "^16.4.7",
     "flowbite-react": "^0.10.2",
     "font-awesome": "^4.7.0",
+    "hls.js": "^1.5.17",
+    "plyr": "^3.7.8",
+    "plyr-react": "^5.3.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-helmet": "^6.1.0",
     "react-router-dom": "^7.0.2",
     "react-slick": "^0.30.2",
     "slick-carousel": "^1.8.1",
-    "tw-elements-react": "^1.0.0-alpha-end"
+    "tailwind-scrollbar": "^3.1.0",
+    "tw-elements-react": "^1.0.0-alpha-end",
+    "video.js": "^8.21.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.15.0",

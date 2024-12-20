@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 import videojs from "video.js";
 import "video.js/dist/video-js.css"; // Import Video.js CSS
 
-const VideoPlayer = ({ videoUrl }) => {
+const VideoPlayer = ({ videoUrl,subtitleUrl }) => {
   const videoNode = useRef(null); // Reference for the video DOM node
   const player = useRef(null); // Reference for the Video.js instance
 
@@ -10,6 +10,7 @@ const VideoPlayer = ({ videoUrl }) => {
     // Initialize Video.js player
     if (videoNode.current) {
       player.current = videojs(videoNode.current, {
+        autoplay:true,
         controls: true,
         responsive: true,
         fluid: true, // Makes the player responsive
@@ -21,6 +22,17 @@ const VideoPlayer = ({ videoUrl }) => {
             type: "application/x-mpegURL", // HLS MIME type
           },
         ],
+        tracks: subtitleUrl
+        ? [
+            {
+              kind: "captions", // Type of track
+              label: "English", // Subtitle language
+              src: subtitleUrl, // Subtitle URL
+              srclang: "en", // Language code (optional)
+              default: true, // Make it default if it's the first subtitle
+            },
+          ]
+        : [],
       });
 
       // Add error handling
@@ -28,8 +40,6 @@ const VideoPlayer = ({ videoUrl }) => {
         console.error("An error occurred during playback.");
       });
     }
-
-    // Cleanup on unmount
    
   }, [videoUrl]);
 

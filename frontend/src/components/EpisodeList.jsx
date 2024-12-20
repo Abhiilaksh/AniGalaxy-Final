@@ -33,7 +33,7 @@ const EpisodeList = ({ episodes, ranges, range, handleRangeChange }) => {
     <div
       className={`${
         episodes.length < 30 ? "lg:w-96" : "lg:w-96"
-      } overflow-y-scroll p-4 bg-black text-white mr-4 rounded-md scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-700 border rounded-xl lg:ml-auto`}
+      } overflow-y-scroll p-4 bg-black text-white mr-4 rounded-md scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-700 border rounded-xl lg:ml-auto `}
       style={{ height: "500px" }}
     >
       <div className="flex justify-between items-center mb-4">
@@ -70,7 +70,7 @@ const EpisodeList = ({ episodes, ranges, range, handleRangeChange }) => {
             >
               {episodes.length < 30 ? (
                 <div
-                  className={`border rounded-md px-6 py-2 text-left text-lg ${episode.isFiller ? "text-pink-600 font-bold"  : ""}`}
+                  className={`border-[1px] rounded-md px-6 py-2 text-left text-lg ${episode.isFiller ? "text-pink-600 font-bold"  : ""}`}
                 >
                   {`${episode.number}  ${episode.title}`}
                 </div>

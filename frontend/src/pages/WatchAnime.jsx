@@ -13,6 +13,7 @@ export const Watch = () => {
   const [range, setRange] = useState([0, 100]); // Default range: 0–100
   const [videoUrl, setVideoUrl] = useState(null);
   const [videoLoading, setVideoLoading] = useState(true); // Track video loading state
+  const [subtitleUrl, setSubtitleUrl] = useState(null); // For subtitles
   const location = useLocation();
 
   // Extract the entire URL after the base domain
@@ -37,29 +38,44 @@ export const Watch = () => {
 
   useEffect(() => {
     const fetchVideo = async () => {
-      if (!fullPath.includes('?ep=')) return;  // Ensure we're fetching video only when ?ep= is present
+      if (!fullPath.includes('?ep=')) return; // Ensure we're fetching video only when ?ep= is present
 
       setVideoLoading(true); // Start video loading
       try {
         // Try primary server first
-        let link = await fetch(`${animeKey}episode/sources?animeEpisodeId=${fullPath}`);
+        const link = await fetch(`${animeKey}episode/sources?animeEpisodeId=${fullPath}`);
         if (!link.ok) throw new Error("Primary server failed");
 
-        // Process video source response
         const responseData = await link.json();
         if (!responseData.data?.sources?.length) throw new Error("No video sources available");
 
         setVideoUrl(responseData.data.sources[0].url);
+
+        // Handle subtitles
+        const tracks = responseData.data.tracks || [];
+        let selectedSubtitle = null;
+
+        if (tracks.length === 1) {
+          // If only one track is available, use it
+          selectedSubtitle = tracks[0].file;
+        } else {
+          // Find English subtitles, default, or fallback to the first track
+          selectedSubtitle =
+            tracks.find((track) => track.label?.toLowerCase() === "english")?.file ||
+            tracks.find((track) => track.default)?.file ||
+            tracks[0]?.file;
+        }
+
+        setSubtitleUrl(selectedSubtitle);
       } catch (error) {
-        console.error("Error fetching video:", error);
+        console.error("Error fetching video or subtitles:", error);
       } finally {
         setVideoLoading(false); // Stop video loading
       }
     };
 
-    // Fetch video only when the episode query (?ep=) is present
     fetchVideo();
-  }, [fullPath]); // Trigger the effect when the fullPath changes
+  }, [fullPath]);
 
   // Create ranges for the episode list in chunks of 100
   const totalRanges = Math.ceil(episodes.length / 100);
@@ -90,8 +106,8 @@ export const Watch = () => {
               <Loader />
             </div>
           ) : (
-            <div className="h-full  ">
-              <VideoPlayer videoUrl={videoUrl} />
+            <div className="h-full">
+              <VideoPlayer videoUrl={videoUrl} subtitleUrl={subtitleUrl} />
             </div>
           )}
         </div>
@@ -106,7 +122,6 @@ export const Watch = () => {
           />
         </div>
       </div>
-     
     </>
   );
 };

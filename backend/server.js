@@ -5,6 +5,14 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.head('/api/v1/Health', (req, res) => {
+    // Log the request if needed
+    console.log('HEAD request received:', req.query);
+
+    // Send a response without a body
+    res.status(200).end();
+});
+
 
 app.use("/api/v1", mainRouter);
 

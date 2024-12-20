@@ -44,7 +44,7 @@ const Navbar = () => {
     setMenu(false); // Close the menu when a link is clicked
   };
 
-  const isActive = (path) => location.pathname === path ? ' text-white font-bold' : 'hover:font-semibold';
+  const isActive = (path) => location.pathname === path ? ' text-white font-semibold' : '';
 
   return (
     <nav className="fixed top-0 left-0 w-full bg-black bg-opacity-40 backdrop-blur-0 text-white mt-[-18px]  pb-2 z-50">

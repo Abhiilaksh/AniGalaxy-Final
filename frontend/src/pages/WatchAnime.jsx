@@ -90,7 +90,7 @@ export const Watch = () => {
               <Loader />
             </div>
           ) : (
-            <div className="h-full">
+            <div className="h-full  ">
               <VideoPlayer videoUrl={videoUrl} />
             </div>
           )}
@@ -106,9 +106,7 @@ export const Watch = () => {
           />
         </div>
       </div>
-      <div className="">
-        {"Similar Anime"}
-      </div>
+     
     </>
   );
 };

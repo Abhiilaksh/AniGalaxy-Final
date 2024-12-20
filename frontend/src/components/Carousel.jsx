@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 
 const SlideShow = ({ animeData }) => {
   return (
+    <div className="">
     <Carousel loop autoplay className="rounded-sm"
     navigation={({ setActiveIndex, activeIndex, length }) => (
         <div className="absolute bottom-4 left-2/4  flex -translate-x-2/4 gap-2">
@@ -112,6 +113,7 @@ const SlideShow = ({ animeData }) => {
         </div>
       ))}
     </Carousel>
+    </div>
   );
 };
 

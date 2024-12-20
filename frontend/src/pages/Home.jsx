@@ -24,12 +24,16 @@ export const Home = () => {
     }, []);
 
     return (
-        <div>
+        <>
+        
+        <div className="bg-black md:pt-0 pt-[55px]">
             {loading ? (
                 <Loader /> // Show spinner while loading
             ) : (
                 <SlideShow animeData={slide} />
             )}
         </div>
+      
+        </>
     );
 };

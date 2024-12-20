@@ -59,7 +59,7 @@ export const AnimeInfo = () => {
         </div>
         <div className="absolute inset-0 bg-black/[.35] bg-opacity-20 flex flex-col md:flex-row text-white pt-10 md:pt-[100px] px-4 md:px-16 gap-8 md:gap-16">
           {/* Image Section */}
-          <div className="w-full md:w-[350px] flex justify-center md:pt-[50px] pt-4">
+          <div className="w-full md:w-[350px] flex justify-center md:pt-[50px] pt-8">
             <img
               className="rounded-lg w-[150px] md:w-[250px] sm:h-[300px]"
               src={animeData.poster || {anime}}

@@ -30,9 +30,19 @@ const userSchema=new mongoose.Schema({
     }
 });
 
+
+const CommentSchema = new mongoose.Schema({
+    animeId: { type: String, required: true },
+    name: { type: String, required: true },
+    comment: { type: String, required: true },
+    createdAt: { type: Date, default: Date.now }
+});
+
 const User=mongoose.model('User',userSchema)
+const Comment=mongoose.model("Comment",CommentSchema)
 
 
 module.exports={
-    User
+    User,
+    Comment
 };

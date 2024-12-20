@@ -26,9 +26,7 @@ const Navbar = () => {
 
     if (token) {
       setIsLoggedin(true);
-      // Fetch user image (or get it from localStorage/sessionStorage)
-      const fetchedImage = localStorage.getItem("userImage"); // Example: You can replace this with an API call
-      setUserImage(fetchedImage);
+      
     }
 
     return () => {
@@ -37,11 +35,11 @@ const Navbar = () => {
   }, []);
 
   const handleMenuToggle = () => {
-    setMenu(prevMenu => !prevMenu); // Toggle menu visibility
+    setMenu(prevMenu => !prevMenu); 
   };
 
   const handleLinkClick = () => {
-    setMenu(false); // Close the menu when a link is clicked
+    setMenu(false); 
   };
 
   const isActive = (path) => location.pathname === path ? ' text-white font-semibold' : '';

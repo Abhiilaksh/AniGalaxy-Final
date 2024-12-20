@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import { RelatedAnime } from "../components/RelatedAnime";
 import { RecommendedAnime } from "../components/RecommendedAnime";
 import { Loader } from "../components/Spinner";
+import { AnimeDiscussion } from "../components/AnimeDiscussion";
 
 
 export const AnimeInfo = () => {
@@ -140,6 +141,10 @@ export const AnimeInfo = () => {
 
         </div>
       </div>
+
+  <div className="pl-8 pt-8 h-[600px] overflow-auto">
+    <AnimeDiscussion animeId={id}/>
+  </div>
       <div>
         <RelatedAnime data={relatedAnime}/>
       </div>

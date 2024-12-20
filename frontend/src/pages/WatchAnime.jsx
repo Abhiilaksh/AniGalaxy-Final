@@ -14,6 +14,8 @@ export const Watch = () => {
   const [videoUrl, setVideoUrl] = useState(null);
   const [videoLoading, setVideoLoading] = useState(true); // Track video loading state
   const [subtitleUrl, setSubtitleUrl] = useState(null); // For subtitles
+  const [title, setTitle] = useState('');
+  const [path, setPath] = useState('');
   const location = useLocation();
 
   // Extract the entire URL after the base domain
@@ -27,6 +29,12 @@ export const Watch = () => {
         if (!response.ok) throw new Error("Failed to fetch episodes");
         const result = await response.json();
         setEpisodes(result.data.episodes);
+
+        // Find the episode that matches the current fullPath (episodeId)
+        const currentEpisode = result.data.episodes.find(ep => fullPath.includes(ep.episodeId));
+        if (currentEpisode) {
+          setTitle(currentEpisode.title);  // Set the title from the matched episode
+        }
       } catch (error) {
         console.error("Error fetching episodes:", error);
       }
@@ -34,10 +42,12 @@ export const Watch = () => {
 
     // Fetch episodes even if no ?ep= query
     fetchEpisodes();
-  }, [anime]);
+  }, [anime, fullPath]);
 
   useEffect(() => {
     const fetchVideo = async () => {
+      const currentPath = window.location.pathname.split('/watch/')[1] + window.location.search;
+      setPath(currentPath);
       if (!fullPath.includes('?ep=')) return; // Ensure we're fetching video only when ?ep= is present
 
       setVideoLoading(true); // Start video loading
@@ -91,10 +101,10 @@ export const Watch = () => {
 
   return (
     <>
-      <div className="pt-32 text-center text-2xl font-bold">
-        {"Watching "}
+      <div className="pt-32 flex justify-center items-center text-2xl font-bold">
+        {title}
       </div>
-
+  
       <div className="flex flex-col bg-black lg:flex-row lg:space-x-4">
         {/* Video Section */}
         <div
@@ -111,7 +121,7 @@ export const Watch = () => {
             </div>
           )}
         </div>
-
+  
         {/* Episode List Section */}
         <div className="w-full lg:w-auto order-2 lg:order-2">
           <EpisodeList
@@ -124,4 +134,5 @@ export const Watch = () => {
       </div>
     </>
   );
+  
 };

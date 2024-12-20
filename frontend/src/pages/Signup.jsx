@@ -82,7 +82,7 @@ const Signup = () => {
                     }
                   );
                   localStorage.setItem("token", response.data.token);
-                  navigate("/dashboard");
+                  navigate("/");
                 }}
                 label={"Sign up"}
               />

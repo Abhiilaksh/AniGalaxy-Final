@@ -38,7 +38,7 @@ const Sidebar = ({ menu, handleLinkClick, isActive, isLoggedin }) => {
               </Link>
             )}
           </li>
-          <li className="py-2"><SearchBox ></SearchBox></li>
+         
         </ul>
       </div>
     )

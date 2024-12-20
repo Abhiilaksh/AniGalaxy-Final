@@ -23,11 +23,11 @@ const SearchBox = () => {
   };
 
   return (
-    <div className="relative w-72">
+    <div className="relative md:w-72">
       <input
         type="text"
         placeholder="Search..."
-        className="w-full py-2 px-4 pl-10 border rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="w-full py-1 md:py-2 px-4 pl-10 border rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
         value={searchTerm}
         onChange={handleChange}
         onKeyDown={handleKeyDown} // Detect Enter key

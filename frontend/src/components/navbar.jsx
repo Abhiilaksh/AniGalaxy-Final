@@ -53,6 +53,7 @@ const Navbar = () => {
           <Link to="/" className="pl-2">
             <Heading label="AniGalaxy" size="2xl" />
           </Link>
+        <div className="mt-5 px-4 "><SearchBox/></div>
           <button onClick={handleMenuToggle}>
             <div className="pr-4 pt-4">
               <svg

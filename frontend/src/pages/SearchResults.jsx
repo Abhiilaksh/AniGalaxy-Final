@@ -29,7 +29,7 @@ export const SearchResult=()=>{
     return(
         <>
         {loading?(<Loader/>):(<><div className=" pt-16 sm:pt-24 flex justify-center"><Heading label={`Search results for ${query} :`} size={"2xl"}></Heading></div>
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 pt-16 sm:pt-24 sm:pl-24">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-5 gap-4 pt-16 sm:pt-24 sm:pl-24">
           {result.map((anime) => (
             <AnimeCard key={anime.id} title={anime.name} image={anime.poster} id={anime.id}/>
           ))}

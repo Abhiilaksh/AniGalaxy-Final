@@ -12,11 +12,11 @@ export const Watch = () => {
   const [episodes, setEpisodes] = useState([]);
   const [range, setRange] = useState([0, 100]); // Default range: 0–100
   const [videoUrl, setVideoUrl] = useState(null);
+  const [videoLoading, setVideoLoading] = useState(true); // Track video loading state
   const location = useLocation();
 
   // Extract the entire URL after the base domain
   const fullPath = location.pathname.replace('/watch/', '') + location.search;
-  
 
   useEffect(() => {
     const fetchEpisodes = async () => {
@@ -26,32 +26,40 @@ export const Watch = () => {
         if (!response.ok) throw new Error("Failed to fetch episodes");
         const result = await response.json();
         setEpisodes(result.data.episodes);
-  
-        // Fetch video source with fallback mechanism
-        let link;
-        try {
-          // Try primary server first
-          link = await fetch(`${animeKey}episode/sources?animeEpisodeId=${fullPath}`);
-          if (!link.ok) throw new Error("Primary server failed");
-        } catch (primaryError) {
-          console.warn("Primary server failed, trying fallback server:", primaryError);
-          // Fallback to secondary server
-          link = await fetch(`${animeKey}episode/sources?animeEpisodeId=${fullPath}&server=hd-2`);
-          if (!link.ok) throw new Error("Fallback server failed");
-        }
-  
+      } catch (error) {
+        console.error("Error fetching episodes:", error);
+      }
+    };
+
+    // Fetch episodes even if no ?ep= query
+    fetchEpisodes();
+  }, [anime]);
+
+  useEffect(() => {
+    const fetchVideo = async () => {
+      if (!fullPath.includes('?ep=')) return;  // Ensure we're fetching video only when ?ep= is present
+
+      setVideoLoading(true); // Start video loading
+      try {
+        // Try primary server first
+        let link = await fetch(`${animeKey}episode/sources?animeEpisodeId=${fullPath}`);
+        if (!link.ok) throw new Error("Primary server failed");
+
         // Process video source response
         const responseData = await link.json();
         if (!responseData.data?.sources?.length) throw new Error("No video sources available");
+
         setVideoUrl(responseData.data.sources[0].url);
       } catch (error) {
-        console.error("Error fetching data:", error);
-        // Optionally, handle error state
+        console.error("Error fetching video:", error);
+      } finally {
+        setVideoLoading(false); // Stop video loading
       }
     };
-  
-    fetchEpisodes();
-  }, [anime, fullPath]);
+
+    // Fetch video only when the episode query (?ep=) is present
+    fetchVideo();
+  }, [fullPath]); // Trigger the effect when the fullPath changes
 
   // Create ranges for the episode list in chunks of 100
   const totalRanges = Math.ceil(episodes.length / 100);
@@ -68,32 +76,39 @@ export const Watch = () => {
   return (
     <>
       <div className="pt-32 text-center text-2xl font-bold">
-  {/* Add a title or something here */}
-</div>
-
-<div className="flex flex-col lg:flex-row lg:space-x-4">
-  {/* Video Section */}
-  <div className="bg-black w-full lg:w-[80%] ml-0 lg:ml-8 pl-2 pr-4 py-16 order-1 lg:order-1">
-    <h1 className="text-white">HLS Video Player</h1>
-    {videoUrl ? (
-      <VideoPlayer videoUrl={videoUrl} />
-    ) : (
-      <div>
-        <Loader />
+        {"Watching "}
       </div>
-    )}
-  </div>
 
-  {/* Episode List Section */}
-  <div className="w-full lg:w-auto order-2 lg:order-2">
-    <EpisodeList
-      episodes={episodes}
-      ranges={ranges}
-      range={range}
-      handleRangeChange={handleRangeChange}
-    />
-  </div>
-</div>
+      <div className="flex flex-col bg-black lg:flex-row lg:space-x-4">
+        {/* Video Section */}
+        <div
+          className="bg-black w-full lg:w-[80%] ml-0 lg:ml-8 pl-2 pr-4 py-8 lg:py-4 order-1 lg:order-1"
+          style={{ height: videoUrl ? "auto" : "300px" }}
+        >
+          {videoLoading ? ( // Show loader when video is loading
+            <div className="flex items-center justify-center h-full">
+              <Loader />
+            </div>
+          ) : (
+            <div className="h-full">
+              <VideoPlayer videoUrl={videoUrl} />
+            </div>
+          )}
+        </div>
+
+        {/* Episode List Section */}
+        <div className="w-full lg:w-auto order-2 lg:order-2">
+          <EpisodeList
+            episodes={episodes}
+            ranges={ranges}
+            range={range}
+            handleRangeChange={handleRangeChange}
+          />
+        </div>
+      </div>
+      <div className="">
+        {"Similar Anime"}
+      </div>
     </>
   );
 };

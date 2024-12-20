@@ -1,53 +1,45 @@
-import { useEffect, useRef } from "react";
-import Hls from "hls.js";
-import Plyr from "plyr-react";
-import "plyr-react/plyr.css"; // Import Plyr CSS
+import React, { useEffect, useRef } from "react";
+import videojs from "video.js";
+import "video.js/dist/video-js.css"; // Import Video.js CSS
 
 const VideoPlayer = ({ videoUrl }) => {
-  const playerRef = useRef(null); // Reference for the Plyr component
+  const videoNode = useRef(null); // Reference for the video DOM node
+  const player = useRef(null); // Reference for the Video.js instance
 
   useEffect(() => {
-    // Initialize Plyr player
-    const player = playerRef.current.plyr;
-
-    // Check if HLS.js is supported
-    if (Hls.isSupported()) {
-      const hls = new Hls();
-
-      // Load the video URL (HLS stream)
-      hls.loadSource(videoUrl);
-
-      // Attach HLS to the Plyr player
-      hls.attachMedia(player.media);
-
-      // Listen for HLS errors
-      hls.on(Hls.Events.ERROR, (event, data) => {
-        if (data.fatal) {
-          switch (data.fatal) {
-            case Hls.ErrorTypes.NETWORK_ERROR:
-              console.error('Network error encountered.');
-              break;
-            case Hls.ErrorTypes.MEDIA_ERROR:
-              console.error('Media error encountered.');
-              break;
-            case Hls.ErrorTypes.OTHER_ERROR:
-              console.error('Other error encountered.');
-              break;
-            default:
-              break;
-          }
-        }
+    // Initialize Video.js player
+    if (videoNode.current) {
+      player.current = videojs(videoNode.current, {
+        controls: true,
+        responsive: true,
+        fluid: true, // Makes the player responsive
+        preload: "auto",
+        playbackRates: [0.5, 1, 1.5, 2], // Speed control
+        sources: [
+          {
+            src: videoUrl,
+            type: "application/x-mpegURL", // HLS MIME type
+          },
+        ],
       });
 
-      return () => {
-        hls.destroy();
-      };
+      // Add error handling
+      player.current.on("error", () => {
+        console.error("An error occurred during playback.");
+      });
     }
+
+    // Cleanup on unmount
+   
   }, [videoUrl]);
 
   return (
-    <div className="video-container w-full max-w-4xl mx-auto ml-24">
-      <Plyr ref={playerRef} />
+    <div className="video-container" style={{ minHeight: '300px', width: '100%' }}>
+      <video
+        ref={videoNode}
+        className="video-js vjs-default-skin vjs-big-play-centered"
+        style={{ width: '100%', height: 'auto' }}
+      />
     </div>
   );
 };

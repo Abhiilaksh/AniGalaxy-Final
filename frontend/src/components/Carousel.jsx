@@ -1,6 +1,5 @@
-import { Carousel, Typography, Button,IconButton } from "@material-tailwind/react";
+import { Carousel, Typography, Button, IconButton } from "@material-tailwind/react";
 import { Link } from "react-router-dom";
-
 
 const SlideShow = ({ animeData }) => {
   return (
@@ -18,107 +17,97 @@ const SlideShow = ({ animeData }) => {
           ))}
         </div>
       )}
-    prevArrow={({ handlePrev }) => (
-        <IconButton
-          variant="text"
-          color="white"
-          size="lg"
-          onClick={handlePrev}
-          className="!absolute top-2/4 left-4 -translate-y-2/4"
-        >   <div className="ml-[-10px] sm:ml-0">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={2}
-            stroke="currentColor"
-            className="h-6 w-6"
+      prevArrow={({ handlePrev, activeIndex }) => (
+        activeIndex !== 0 && (  // Only render and enable the prev arrow if not on the first slide
+          <IconButton
+            variant="text"
+            color="white"
+            size="lg"
+            onClick={handlePrev}
+            className="!absolute top-2/4 left-4 -translate-y-2/4"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
-            />
-          </svg>
-          </div>
-        </IconButton>
-      )}
-      nextArrow={({ handleNext }) => (
-        <IconButton
-          variant="text"
-          color="white"
-          size="lg"
-          onClick={handleNext}
-          className="!absolute top-2/4 !right-4 -translate-y-2/4"
-        >
-            <div className="mr-[-25px] sm:mr-0">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={2}
-            stroke="currentColor"
-            className="h-6 w-6"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
-            />
-          </svg>
-          </div>
-        </IconButton>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2}
+              stroke="currentColor"
+              className="h-6 w-6"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
+              />
+            </svg>
+          </IconButton>
+        )
       )}>
-      {animeData.map((anime, index) => (
-        <div key={index} className="relative h-[275px] sm:h-[500px] lg:h-[600px] xl:h-[700px]">
-          <img
-            src={anime.poster}
-            alt={anime.name}
-            className="h-full w-full "
-          />
-           <Link to={`/anime/${anime.id}`}>
-          <div className="absolute inset-0 flex items-center justify-start bg-black/[.15] md:bg-black/[.35] pl-8 sm:pl-16">
-         
+      {animeData.slice(1,10).map((anime, index) => (
+        <div
+          key={index}
+          className="relative h-[275px] sm:h-[500px] lg:h-[600px] xl:h-[700px] "
+        >
+        
+        <div
+  className="absolute inset-0 z-0 bg-cover bg-center filter "
+  style={{
+    backgroundImage: `url(${anime.poster})`,
+  }}
+></div>
 
-            <div className="text-left max-w-xl px-5 mr-12 ml-2 ">
-            
-              <Typography
-                variant="h1"
-                color="white"
-                className="mb-4 text-xl sm:text-3xl md:text-4xl lg:text-5xl pl-1 font-extrabold"
-              >
-                {anime.name}
-              </Typography>
-              {/* Hide description on smaller screens */}
-              <div className="hidden sm:block">
-              <Typography
-                variant="lead"
-                color="white"
-                className="mb-12 opacity-100  text-sm sm:text-md h-24 w-[500px] overflow-hidden text-ellipsis line-clamp-4 font-semibold leading-relaxed "
-              >
-                {anime.description}
-              </Typography>
+
+
+          {/* Gradient Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/[.7] to-transparent "></div>
+
+          <Link to={`/anime/${anime.id}`}>
+            <div className="relative flex items-center justify-between h-full px-8 sm:px-16">
+              {/* Description Section */}
+              <div className="text-left max-w-xl px-5">
+                <Typography
+                  variant="h1"
+                  color="white"
+                  className="mb-4 text-xl sm:text-3xl md:text-4xl lg:text-5xl font-bold px-4 sm:px-0"
+                >
+                  {anime.name}
+                </Typography>
+                <div className="hidden sm:block">
+                <Typography
+  variant="lead"
+  color="white"
+  className="mb-12 text-sm sm:text-md h-24 w-[500px] overflow-hidden text-ellipsis line-clamp-4  leading-relaxed"
+>
+  <div
+    dangerouslySetInnerHTML={{ __html: anime.description }}
+  />
+</Typography>
+                </div>
+                <div className="hidden sm:block">
+                  <Link to={`/watch/${anime.id}`}>
+                    <Button
+                      size=""
+                      color="white"
+                      className="text-xs sm:text-base lg:text-lg xl:text-xl p-2 sm:px-4 bg-amber-200"
+                    >
+                      Watch
+                    </Button>
+                  </Link>
+                  <Link to={`/anime/${anime.id}`}>
+                    <Button
+                      size="lg"
+                      color="white"
+                      className="text-xs sm:text-base lg:text-lg xl:text-xl ml-4 p-2 sm:px-4 bg-lime-300"
+                    >
+                      Info
+                    </Button>
+                  </Link>
+                </div>
               </div>
-              <div className="hidden sm:block">
-             <Link to={`/watch/${anime.id}`}><Button
-                size=""
-                color="white"
-                className="text-xs sm:text-base lg:text-lg xl:text-xl p-2 sm:px-4 bg-amber-200" 
-              >
-                Watch
-              </Button></Link>
-              <Link to={`/anime/${anime.id}`}>
-              <Button
-                size="lg"
-                color="white"
-                className="text-xs sm:text-base lg:text-lg xl:text-xl ml-4 p-2 sm:px-4 bg-lime-300" 
-              >
-                Info
-              </Button></Link>
-             </div>
+
+       
+
             </div>
-            
-          </div>
           </Link>
         </div>
       ))}

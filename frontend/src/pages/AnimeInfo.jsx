@@ -107,7 +107,7 @@ export const AnimeInfo = () => {
               </p>
             </div>
           </div>
-          <div className="hidden 2xl:flex flex-col w-[600px] p-6 mt-8 text-justify bg-black/20 rounded-lg shadow-md backdrop-blur-sm">
+          <div className="hidden 2xl:flex flex-col w-[600px] p-6 mt-8 text-justify bg-black/20 rounded-lg shadow-md backdrop-blur-sm h-[450px]">
   <div className="font-semibold text-xl mb-4">Anime Details:</div>
   <div className="mb-2">
     <span className="font-medium">Japanese:</span> {moreInfo.japanese || "N/A"}

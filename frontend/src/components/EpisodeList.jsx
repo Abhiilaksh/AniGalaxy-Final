@@ -65,12 +65,12 @@ const EpisodeList = ({ episodes, ranges, range, handleRangeChange }) => {
         {episodes.slice(range[0], range[1]).map((episode, i) => (
          
             <button
-              className={`mb-4 w-12 ${episodes.length < 30 ? "w-full text-left" : "bg-gray-900 text-white rounded hover:bg-gray-500 text-center"} ${activeEpisode === episode.episodeId ? "bg-gray-600 rounded-md" : ""}`}
+              className={`mb-4 w-12 ${episodes.length < 30 ? "w-full text-left" : "bg-gray-900  rounded  text-center"} ${activeEpisode === episode.episodeId ? "bg-lime-300 text-black rounded-md" : "text-white"}`}
               onClick={() => handleEpisodeClick(episode.episodeId)}
             >
               {episodes.length < 30 ? (
                 <div
-                  className={`border rounded-md px-6 py-2 text-left text-lg ${episode.isFiller ? "text-pink-400" : ""}`}
+                  className={`border rounded-md px-6 py-2 text-left text-lg ${episode.isFiller ? "text-pink-600 font-bold"  : ""}`}
                 >
                   {`${episode.number}  ${episode.title}`}
                 </div>

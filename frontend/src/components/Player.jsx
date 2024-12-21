@@ -1,14 +1,15 @@
 import React, { useEffect, useRef } from "react";
 import videojs from "video.js";
 import "video.js/dist/video-js.css"; // Import Video.js CSS
+import "videojs-contrib-quality-levels"; // Quality levels plugin
 
 const VideoPlayer = ({ videoUrl, subtitleUrl }) => {
   const videoNode = useRef(null); // Reference for the video DOM node
   const player = useRef(null); // Reference for the Video.js instance
 
   useEffect(() => {
-    // Initialize Video.js player
     if (videoNode.current) {
+      // Initialize Video.js player
       player.current = videojs(videoNode.current, {
         autoplay: true,
         controls: true,
@@ -25,59 +26,50 @@ const VideoPlayer = ({ videoUrl, subtitleUrl }) => {
         tracks: subtitleUrl
           ? [
               {
-                kind: "captions", // Type of track
-                label: "English", // Subtitle language
-                src: subtitleUrl, // Subtitle URL
-                srclang: "en", // Language code (optional)
-                default: true, // Make it default if it's the first subtitle
+                kind: "captions",
+                label: "English",
+                src: subtitleUrl,
+                srclang: "en",
+                default: true,
               },
             ]
           : [],
       });
 
-      // Add error handling
-      player.current.on("error", () => {
-        console.error("An error occurred during playback.");
-      });
-
-      // Handle fullscreen changes
+      // Handle fullscreen landscape mode
       const handleFullscreenChange = () => {
-        // Check if fullscreen is active and if the device is smaller than a specific width (e.g., 768px)
-        if (document.fullscreenElement || player.current.isFullscreen()) {
-          if (window.innerWidth <= 768 && window.orientation !== 90) {
-            // Rotate screen to landscape on smaller devices
+        if (player.current.isFullscreen()) {
+          // Lock screen orientation to landscape when fullscreen is activated
+          if (screen.orientation && screen.orientation.lock) {
             screen.orientation.lock("landscape").catch((err) => {
-              console.error("Error locking orientation: ", err);
+              console.warn("Orientation lock failed:", err);
             });
           }
         } else {
-          // Unlock the orientation when exiting fullscreen
-          screen.orientation.unlock();
+          // Unlock screen orientation when exiting fullscreen
+          if (screen.orientation && screen.orientation.unlock) {
+            screen.orientation.unlock();
+          }
         }
       };
 
-      // Add fullscreen change listener
-      document.addEventListener("fullscreenchange", handleFullscreenChange);
-      document.addEventListener("webkitfullscreenchange", handleFullscreenChange);
-      document.addEventListener("mozfullscreenchange", handleFullscreenChange);
-      document.addEventListener("MSFullscreenChange", handleFullscreenChange);
+      // Listen for Video.js fullscreenchange event
+      player.current.on("fullscreenchange", handleFullscreenChange);
 
-      return () => {
-        // Cleanup the event listener
-        document.removeEventListener("fullscreenchange", handleFullscreenChange);
-        document.removeEventListener("webkitfullscreenchange", handleFullscreenChange);
-        document.removeEventListener("mozfullscreenchange", handleFullscreenChange);
-        document.removeEventListener("MSFullscreenChange", handleFullscreenChange);
-      };
+   
+     
     }
   }, [videoUrl, subtitleUrl]);
 
   return (
-    <div className="video-container" style={{ minHeight: "300px", width: "100%" }}>
+    <div
+      className="video-container"
+      style={{ minHeight: "300px", width: "100%" }}
+    >
       <video
         ref={videoNode}
         className="video-js vjs-default-skin vjs-big-play-centered"
-        style={{ width: "100%", height: "auto" }}
+        style={{ width: "100%" }}
       />
     </div>
   );

@@ -15,6 +15,7 @@ import { Movies } from './pages/Movies';
 import { AnimeInfo } from './pages/AnimeInfo';
 import { SearchResult } from './pages/SearchResults';
 import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from "@vercel/speed-insights/react"
 import { Watch } from './pages/WatchAnime';
 import { Profile } from './pages/Profile';
 import { Footer } from './components/Footer';
@@ -50,6 +51,7 @@ function RoutesWrapper() {
         <Route path="/a-z/:alpha" element={<AZList />} />
       </Routes>
       <Analytics />
+      <SpeedInsights/>
       {/* Render Footer only if the path doesn't start with /a-z/ */}
       {!location.pathname.startsWith('/a-z/') && <Footer />}
     </>

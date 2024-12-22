@@ -7,10 +7,10 @@ const SECRET_KEY = "AnigalaxybyAbhilaksh";
 
 // POST: Add a comment for a specific anime
 router.post("/comment",  async (req, res) => {
-    const { animeId, episodeId, name, comment } = req.body;
+    const { animeId, name, comment } = req.body;
 
     // Validate request body
-    if (!animeId || !episodeId || !name || !comment?.trim()) {
+    if (!animeId ||  !name || !comment?.trim()) {
         return res.status(400).json({ error: "Anime ID, episode ID, name, and comment are required" });
     }
 
@@ -18,7 +18,7 @@ router.post("/comment",  async (req, res) => {
         // Save the comment to the database
         const newComment = new Comment({
             animeId,
-            episodeId,
+
             name,
             comment: comment.trim(),
         });
@@ -34,14 +34,14 @@ router.post("/comment",  async (req, res) => {
 
 // GET: Fetch comments for a specific anime
 router.get("/comment", async (req, res) => {
-    const { animeId, episodeId } = req.body;
+    const { animeId} = req.body;
 
-    if (!animeId || !episodeId) {
+    if (!animeId) {
         return res.status(400).json({ error: "Anime ID and episode ID are required" });
     }
 
     try {
-        const comments = await Comment.find({ animeId, episodeId });
+        const comments = await Comment.find({ animeId });
         res.status(200).json({ comments });
     } catch (error) {
         console.error("Error fetching comments:", error);

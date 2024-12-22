@@ -7,6 +7,7 @@ import { RelatedAnime } from "../components/RelatedAnime";
 import { RecommendedAnime } from "../components/RecommendedAnime";
 import { Loader } from "../components/Spinner";
 import { AnimeDiscussion } from "../components/AnimeDiscussion";
+import ScrollToTop from "../components/scrollToTop";
 
 
 export const AnimeInfo = () => {
@@ -19,7 +20,10 @@ export const AnimeInfo = () => {
   const[recommendedAnime,setRecommendedAnime]=useState([])
   const[loading,setLoading]=useState(false)
   const animeKey = import.meta.env.VITE_ANIME_KEY;
-
+  useEffect(() => {
+    // Scroll to the top when this component is rendered
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [id]);
   useEffect(() => {
     const fetchInfo = async () => {
       try {
@@ -147,9 +151,10 @@ export const AnimeInfo = () => {
       </div>
 
       <div className="pl-8 pt-8 h-[400px] overflow-auto scrollbar-thin scrollbar-thumb-gray-800 scrollbar-track-gray-900">
+      
   <AnimeDiscussion animeId={id} />
 </div>
-
+                <ScrollToTop></ScrollToTop>
       <div>
         <RelatedAnime data={relatedAnime}/>
       </div>

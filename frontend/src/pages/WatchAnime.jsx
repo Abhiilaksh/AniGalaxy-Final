@@ -4,6 +4,7 @@ import EpisodeList from "../components/EpisodeList";
 import VideoPlayer from "../components/Player";
 import { Loader } from "../components/Spinner";
 import AnimeDiscussion from "../components/AnimeDiscussion";
+import ScrollToTop from "../components/scrollToTop";
 
 const ITEMS_PER_PAGE = 100;
 const animeKey = import.meta.env.VITE_ANIME_KEY;
@@ -187,7 +188,7 @@ export const Watch = () => {
           />
         </div>
       </div>
-           
+           <ScrollToTop></ScrollToTop>
       {/* {currentEpisode && (
         <div className="mt-8 px-4">
           <AnimeDiscussion animeId={anime} episode={episodeNumber} />

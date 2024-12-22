@@ -148,7 +148,6 @@ export const AnimeDiscussion = ({ animeId }) => {
                                 </h3>
                             </header>
                             <p className="text-gray-700">{comment.comment}</p>
-                            
                         </article>
                     ))
                 ) : (

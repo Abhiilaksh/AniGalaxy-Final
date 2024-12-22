@@ -16,7 +16,7 @@ const Navbar = () => {
 
   useEffect(() => {
     const checkIsPhone = () => {
-      setIsPhone(window.innerWidth <= 1024);
+      setIsPhone(window.innerWidth <= 1200);
     };
     checkIsPhone();
     window.addEventListener("resize", checkIsPhone);
@@ -90,6 +90,9 @@ const Navbar = () => {
               </li>
               <li>
                 <Link to="/movies" className={`block py-2 ${isActive('/movies')}`}>Movies</Link>
+              </li>
+              <li>
+                <Link to="/a-z/a" className={`block py-2 ${isActive('/a-z/:id')}`}>Index</Link>
               </li>
               <li><SearchBox/></li>
               <li>

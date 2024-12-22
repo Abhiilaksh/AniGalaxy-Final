@@ -26,6 +26,11 @@ const Sidebar = ({ menu, handleLinkClick, isActive, isLoggedin }) => {
               Movies
             </Link>
           </li>
+          <li>
+            <Link to="/a-z/a" className={`block py-2 ${isActive('/a-z/:id')}`} onClick={handleLinkClick}>
+              Index
+            </Link>
+          </li>
           
           <li>
             {isLoggedin ? (

@@ -142,7 +142,7 @@ export const Watch = () => {
 
   return (
     <div className="min-h-screen bg-black">
-      <h1 className="pt-32 text-center text-xl md:text-3xl font-bold text-white  px-16 md:ml-32">
+      <h1 className="pt-24 text-center text-xl md:text-3xl font-bold text-white  px-16 md:ml-32">
         {state.title}
       </h1>
 
@@ -160,8 +160,8 @@ export const Watch = () => {
           )}
         </div>
 
-        <div className="w-full lg:w-auto md:p-8">
-          <div className="pb-4 md:pb-12 sm:ml-0 ml-4 gap-4">
+        <div className="w-full lg:w-auto">
+          <div className="pb-4 md:pb-4 sm:ml-0 ml-4 gap-4 mt-[-50px]">
             {state.dubAvailable && (
               <button
                 onClick={handleAudioToggle}

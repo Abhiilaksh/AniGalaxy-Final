@@ -9,15 +9,12 @@ const VideoPlayer = ({ videoUrl, subtitleUrl }) => {
 
   useEffect(() => {
     if (videoNode.current) {
-     
-      
-
       // Initialize Video.js player
       player.current = videojs(videoNode.current, {
         autoplay: true,
         controls: true,
         responsive: true,
-        fluid: true, // Makes the player responsive
+        fluid: false, // Disable fluid mode for fixed size
         preload: "auto",
         playbackRates: [0.5, 1, 1.5, 2], // Speed control
         sources: [
@@ -60,13 +57,21 @@ const VideoPlayer = ({ videoUrl, subtitleUrl }) => {
 
   return (
     <div
-      className="video-container"
-      style={{ minHeight: "300px", width: "100%" }}
+      className="video-container h-[200px] md:h-[550px] md:w-[95%] md:pl-16 mt-[-10px]"
+      style={{
+        // Fixed height for the container
+     // Full width
+        position: "relative", // Optional for overlay or additional styles
+      }}
     >
       <video
         ref={videoNode}
         className="video-js vjs-default-skin vjs-big-play-centered"
-        style={{ width: "100%" }}
+        style={{
+          height: "100%", // Ensure the video fills the container height
+          width: "100%", // Ensure the video fills the container width
+          objectFit: "fill", // Adjust this based on your preference (cover, contain, fill)
+        }}
       />
     </div>
   );

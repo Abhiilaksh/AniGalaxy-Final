@@ -5,6 +5,7 @@ import VideoPlayer from "../components/Player";
 import { Loader } from "../components/Spinner";
 import AnimeDiscussion from "../components/AnimeDiscussion";
 import ScrollToTop from "../components/scrollToTop";
+import { RWebShare } from "react-web-share";
 
 const ITEMS_PER_PAGE = 100;
 const animeKey = import.meta.env.VITE_ANIME_KEY;
@@ -57,7 +58,7 @@ export const Watch = () => {
     try {
       const isDub = fullPath.includes("category=dub");
 
-      const [subResponse, dubResponse] = await Promise.all([
+      const [subResponse, dubResponse] = await Promise.all([ 
         fetch(
           `${animeKey}episode/sources?animeEpisodeId=${fullPath}&category=sub`
         ),
@@ -141,13 +142,12 @@ export const Watch = () => {
 
   return (
     <div className="min-h-screen bg-black">
-      
-      <div className="flex flex-col lg:flex-row lg:space-x-4 p-4">
-        <div className="w-full lg:w-[80%] min-h-[300px]">
-        <h1 className="pt-32 text-center text-2xl font-bold text-white">
+      <h1 className="pt-32 text-center text-xl md:text-3xl font-bold text-white  px-16 md:ml-32">
         {state.title}
       </h1>
 
+      <div className="flex flex-col lg:flex-row lg:space-x-4 py-12 md:px-4">
+        <div className="w-full lg:w-[80%] min-h-[300px]">
           {state.videoLoading ? (
             <div className="flex items-center justify-center h-full">
               <Loader />
@@ -158,20 +158,33 @@ export const Watch = () => {
               subtitleUrl={state.subtitleUrl}
             />
           )}
-      <div className="text-center mt-[-20px] sm:mt-4 mb-4 sm:mb-2">
-            {state.dubAvailable && (
-            <button
-              onClick={handleAudioToggle}
-              className="mt-4 px-4 py-2 bg-pink-100 text-black rounded hover:bg-pink-200 transition-colors"
-            >
-              Switch {state.isDub ? "Back to Sub" : "to Dub"}
-            </button>
-          )}
-            </div>
-          
         </div>
 
-        <div className="w-full lg:w-auto mx-3 mt-4 md:mt-32">
+        <div className="w-full lg:w-auto md:p-8">
+          <div className="pb-4 md:pb-12 sm:ml-0 ml-4 gap-4">
+            {state.dubAvailable && (
+              <button
+                onClick={handleAudioToggle}
+                className="mt-4 px-4 py-2 bg-pink-100 text-black rounded hover:bg-pink-200 transition-colors"
+              >
+                Switch {state.isDub ? "Back to Sub" : "to Dub"}
+              </button>
+            )}
+
+            {/* Share button */}
+            <RWebShare
+              data={{
+                text: `Check out this episode  ${state.title}\n \n${window.location.href}`,
+                url: window.location.href,
+                title: state.title,
+              }}
+            >
+              <button className="mt-4 px-4 py-2 bg-blue-100  text-black rounded  transition-colors ml-4">
+                Share Episode
+              </button>
+            </RWebShare>
+          </div>
+
           <EpisodeList
             episodes={state.episodes}
             ranges={Array.from(
@@ -188,12 +201,7 @@ export const Watch = () => {
           />
         </div>
       </div>
-           <ScrollToTop></ScrollToTop>
-      {/* {currentEpisode && (
-        <div className="mt-8 px-4">
-          <AnimeDiscussion animeId={anime} episode={episodeNumber} />
-        </div>
-      )} */}
+      <ScrollToTop />
     </div>
   );
 };

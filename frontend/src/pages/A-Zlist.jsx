@@ -43,7 +43,7 @@ export const AZList = () => {
 
   return (
     <>
-     <div className="pt-4 "><Footer /></div>
+     <div className="pt-4 md:pt-24 "><Footer /></div>
       {loading ? (
         <div className="flex justify-center items-center h-screen">
           <Loader /> {/* Assuming Loader is your loader component */}

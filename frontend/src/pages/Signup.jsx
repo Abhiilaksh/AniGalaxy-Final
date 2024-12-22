@@ -15,10 +15,59 @@ const Signup = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(""); // For displaying error messages
   const navigate = useNavigate();
 
   const handleImageLoaded = () => {
     setImageLoaded(true);
+  };
+
+  const validateInputs = () => {
+    if (!firstName || !lastName || !username || !password) {
+      setErrorMessage("All fields are required.");
+      return false;
+    }
+
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(username)) {
+      setErrorMessage("Please enter a valid email address.");
+      return false;
+    }
+
+    if (password.length < 6) {
+      setErrorMessage("Password must be at least 6 characters long.");
+      return false;
+    }
+
+    setErrorMessage(""); // Clear error if all validations pass
+    return true;
+  };
+
+  const handleSignup = async () => {
+    if (!validateInputs()) {
+      return;
+    }
+
+    setLoading(true); // Start loading
+    try {
+      const response = await axios.post(
+        "https://anigalaxy-final-1.onrender.com/api/v1/user/signup",
+        {
+          username,
+          firstName,
+          lastName,
+          password,
+        }
+      );
+      localStorage.setItem("token", response.data.token);
+      navigate("/");
+      window.location.reload();
+    } catch (error) {
+      console.error("Error signing up:", error);
+    } finally {
+      setLoading(false); // Stop loading once done
+    }
   };
 
   return (
@@ -71,23 +120,14 @@ const Signup = () => {
               label={"Password"}
               type={"password"}
             />
+            {errorMessage && (
+              <div className="text-red-500 text-sm mt-2">{errorMessage}</div>
+            )}
             <div className="pt-4">
               <Button
-                onClick={async () => {
-                  const response = await axios.post(
-                    "https://anigalaxy-final-1.onrender.com/api/v1/user/signup",
-                    {
-                      username,
-                      firstName,
-                      lastName,
-                      password,
-                    }
-                  );
-                  localStorage.setItem("token", response.data.token);
-                  navigate("/");
-                  window.location.reload();
-                }}
-                label={"Sign up"}
+                onClick={handleSignup}
+                label={loading ? "Signing up..." : "Sign up"}
+                disabled={loading} // Disable button while loading
               />
             </div>
             <BottomWarning label={"Already have an account?"} buttonText={"Sign in"} to={"/signin"} />

@@ -43,16 +43,16 @@ export const AZList = () => {
 
   return (
     <>
-     <div className="pt-4 mb-[-10px]"><Footer /></div>
+     <div className="pt-4 "><Footer /></div>
       {loading ? (
         <div className="flex justify-center items-center h-screen">
           <Loader /> {/* Assuming Loader is your loader component */}
         </div>
       ) : (
         <>        
-        <div className="text-center text-3xl pt-4">
+        <div className="text-center text-3xl ">
             <Heading label={alpha.toUpperCase()} /></div>
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 pt-16 sm:pt-32 sm:pl-12">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 pt-4 sm:pt-32 sm:pl-12">
             {animeData.map((anime) => (
               <AnimeCard key={anime.id} title={anime.name} image={anime.poster} id={anime.id} />
             ))}

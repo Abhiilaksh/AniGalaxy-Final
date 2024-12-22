@@ -98,9 +98,9 @@ export const AnimeInfo = () => {
               <button className=" py-[12px] bg-pink-100 text-black font-medium text-xs sm:text-sm px-4 sm:py-4 rounded-2xl shadow-md cursor-pointer transition duration-200 ease-in-out">
                 Watch Now
               </button></Link>
-              <button className="py-[12px] bg-white text-black font-medium text-xs sm:text-sm px-4 sm:py-4 rounded-2xl shadow-md cursor-pointer transition duration-200 ease-in-out">
+              {/* <button className="py-[12px] bg-white text-black font-medium text-xs sm:text-sm px-4 sm:py-4 rounded-2xl shadow-md cursor-pointer transition duration-200 ease-in-out">
                 Add To Favourites
-              </button>
+              </button> */}
             </div>
             <div className="pt-4 w-[320px] lg:w-[640px] text-sm pl-2">
               <p className="line-clamp-6 lg:line-clamp-none text-justify">

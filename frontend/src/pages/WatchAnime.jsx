@@ -161,7 +161,7 @@ export const Watch = () => {
         </div>
 
         <div className="w-full lg:w-auto">
-          <div className="pb-4 md:pb-4 sm:ml-0 ml-4 gap-4 mt-[-50px]">
+          <div className="pb-4 md:pb-4 sm:ml-0  gap-4 mt-[-50px] flex justify-evenly">
             {state.dubAvailable && (
               <button
                 onClick={handleAudioToggle}

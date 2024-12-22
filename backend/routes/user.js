@@ -4,7 +4,7 @@ const zod = require('zod');
 const bcrypt = require('bcryptjs'); // Use bcryptjs for hashing
 const jwt = require('jsonwebtoken');
 const { User } = require('../db');
-require('dotenv').config(); // For loading environment variables
+
 
 const JWT_SECRET =  "AnigalaxybyAbhilaksh"; // Use an env variable for JWT_SECRET
 

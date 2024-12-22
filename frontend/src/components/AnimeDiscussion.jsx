@@ -101,7 +101,7 @@ export const AnimeDiscussion = ({ animeId }) => {
     }
 
     return (
-        <div className="max-w-2xl sm:mx-auto mr-8  p-4 h-[200px]">
+        <div className="max-w-2xl sm:mx-auto mr-8  p-4 ">
             <Heading label="Discussion" />
             
             {error && (
@@ -148,6 +148,7 @@ export const AnimeDiscussion = ({ animeId }) => {
                                 </h3>
                             </header>
                             <p className="text-gray-700">{comment.comment}</p>
+                            
                         </article>
                     ))
                 ) : (

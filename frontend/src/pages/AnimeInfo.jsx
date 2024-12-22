@@ -146,9 +146,10 @@ export const AnimeInfo = () => {
         </div>
       </div>
 
-  <div className="pl-8 pt-8 h-[400px] overflow-auto">
-    <AnimeDiscussion animeId={id}/>
-  </div>
+      <div className="pl-8 pt-8 h-[400px] overflow-auto scrollbar-thin scrollbar-thumb-gray-800 scrollbar-track-gray-900">
+  <AnimeDiscussion animeId={id} />
+</div>
+
       <div>
         <RelatedAnime data={relatedAnime}/>
       </div>

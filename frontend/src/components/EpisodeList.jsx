@@ -51,7 +51,7 @@ const EpisodeList = ({ episodes, ranges, range, handleRangeChange }) => {
         </div>
         <select
           onChange={handleRangeChange}
-          className="p-2 bg-gray-900 text-white rounded"
+          className="p-2 pr-8 bg-gray-900 text-white rounded"
         >
           {ranges.map(([start, end], index) => (
             <option key={index} value={index}>

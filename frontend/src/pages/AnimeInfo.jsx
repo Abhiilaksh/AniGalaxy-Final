@@ -146,7 +146,7 @@ export const AnimeInfo = () => {
         </div>
       </div>
 
-  <div className="pl-8 pt-8 h-[600px] overflow-auto">
+  <div className="pl-8 pt-8 h-[400px] overflow-auto">
     <AnimeDiscussion animeId={id}/>
   </div>
       <div>

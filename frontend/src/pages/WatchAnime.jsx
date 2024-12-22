@@ -163,14 +163,14 @@ export const Watch = () => {
               onClick={handleAudioToggle}
               className="mt-4 px-4 py-2 bg-pink-100 text-black rounded hover:bg-pink-200 transition-colors"
             >
-              Switch to {state.isDub ? "Sub" : "Dub"}
+              Switch {state.isDub ? "Back to Sub" : "to Dub"}
             </button>
           )}
             </div>
           
         </div>
 
-        <div className="w-full lg:w-auto mt-4 md:mt-32">
+        <div className="w-full lg:w-auto mx-3 mt-4 md:mt-32">
           <EpisodeList
             episodes={state.episodes}
             ranges={Array.from(

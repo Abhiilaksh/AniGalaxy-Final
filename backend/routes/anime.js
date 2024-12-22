@@ -6,41 +6,58 @@ const { Comment } = require("../db");
 const SECRET_KEY = "AnigalaxybyAbhilaksh";
 
 // POST: Add a comment for a specific anime
-router.post("/comment",  async (req, res) => {
-    const { animeId, name, comment } = req.body;
-
-    // Validate request body
-    if (!animeId ||  !name || !comment?.trim()) {
-        return res.status(400).json({ error: "Anime ID, episode ID, name, and comment are required" });
-    }
-
+router.post("/comment", async (req, res) => {
     try {
-        // Save the comment to the database
-        const newComment = new Comment({
-            animeId,
+        // Extract the token from the Authorization header
+        const token = req.headers.authorization?.split(' ')[1];
+        if (!token) {
+            return res.status(401).json({ error: "No token provided" });
+        }
 
-            name,
-            comment: comment.trim(),
-        });
+        // Verify the token
+        const decoded = jwt.verify(token, SECRET_KEY);
+        if (!decoded) {
+            return res.status(403).json({ error: "Invalid token" });
+        }
+
+        // Extract comment data from the request body
+        const { animeId, name, comment } = req.body;
+
+        // Check if required fields are present
+        if (!animeId || !name || !comment) {
+            return res.status(400).json({ error: "Anime ID, name, and comment are required" });
+        }
+
+        // Trim whitespace from comment
+        const trimmedComment = comment.trim();
+        if (!trimmedComment) {
+            return res.status(400).json({ error: "Comment cannot be empty" });
+        }
+
+        // Create a new comment in the database
+        const newComment = new Comment({ animeId, name, comment: trimmedComment });
         await newComment.save();
 
+        // Return the new comment in the response
         res.status(201).json({ message: "Comment added successfully", comment: newComment });
+
     } catch (error) {
         console.error("Error adding comment:", error);
         res.status(500).json({ error: "Internal server error" });
     }
 });
 
-
 // GET: Fetch comments for a specific anime
 router.get("/comment", async (req, res) => {
-    const { animeId} = req.body;
-
-    if (!animeId) {
-        return res.status(400).json({ error: "Anime ID and episode ID are required" });
-    }
-
     try {
+        const { animeId } = req.query;
+        console.log(animeId);
+
+        if (!animeId) {
+            return res.status(400).json({ error: "Anime ID is required" });
+        }
+
+       
         const comments = await Comment.find({ animeId });
         res.status(200).json({ comments });
     } catch (error) {

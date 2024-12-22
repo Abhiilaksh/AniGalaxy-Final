@@ -33,10 +33,9 @@ const userSchema=new mongoose.Schema({
 
 const CommentSchema = new mongoose.Schema({
     animeId: { type: String, required: true },
-    episodeId: { type: String, required: true }, // New field for episode-specific comments
     name: { type: String, required: true },
     comment: { type: String, required: true },
-    timestamp: { type: Date, default: Date.now }
+    createdAt: { type: Date, default: Date.now }
 });
 
 const User=mongoose.model('User',userSchema)

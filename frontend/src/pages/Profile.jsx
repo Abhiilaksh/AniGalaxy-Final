@@ -10,7 +10,7 @@ export const Profile = () => {
     };
 
     return (
-        <div className="mt-32">
+        <div className="w-full h-full min-h-screen flex items-center justify-center">
             <button onClick={handleLogout} className="bg-pink-100 p-2">Logout</button>
         </div>
     );

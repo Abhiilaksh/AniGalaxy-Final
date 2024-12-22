@@ -83,8 +83,12 @@ export const AnimeInfo = () => {
                 </div>
               )}
               {!isMovie && stats.episodes?.sub && (
-                <div className="py-[8px] bg-lime-300 text-black font-medium text-xs sm:text-sm px-4 sm:py-2 rounded shadow-md cursor-pointer transition duration-200 ease-in-out">
+                <div className="py-[10px] bg-lime-300 text-black font-medium text-xs sm:text-sm px-3 sm:py-2 rounded shadow-md cursor-pointer transition duration-200 ease-in-out">
                   {stats.episodes.sub}
+                </div>
+              )}{!isMovie && stats.episodes?.dub && (
+                <div className="py-[10px] bg-blue-100 text-black font-medium text-xs sm:text-sm px-3 sm:py-2 rounded shadow-md cursor-pointer transition duration-200 ease-in-out">
+                  {stats.episodes.dub}
                 </div>
               )}
               {moreInfo?.duration && (

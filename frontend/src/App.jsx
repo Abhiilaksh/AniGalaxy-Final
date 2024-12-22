@@ -16,6 +16,7 @@ import { AnimeInfo } from './pages/AnimeInfo';
 import { SearchResult } from './pages/SearchResults';
 import { Analytics } from '@vercel/analytics/react';
 import { Watch } from './pages/WatchAnime';
+import { Profile } from './pages/Profile';
 
 function App() {
 
@@ -33,6 +34,7 @@ function App() {
           <Route path="/most-popular" element={<MostPopular/>} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/signin" element={<Signin />} />
+          <Route path="/profile" element={<Profile />} />
         </Routes>
         <Analytics />
       </BrowserRouter>

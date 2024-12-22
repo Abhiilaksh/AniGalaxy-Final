@@ -1,89 +1,125 @@
 const express = require('express');
 const router = express.Router();
-const zod = require("zod");
+const zod = require('zod');
+const bcrypt = require('bcryptjs'); // Use bcryptjs for hashing
+const jwt = require('jsonwebtoken');
+const { User } = require('../db');
+require('dotenv').config(); // For loading environment variables
 
-const { User } = require("../db");
-const jwt = require("jsonwebtoken");
+const JWT_SECRET =  "AnigalaxybyAbhilaksh"; // Use an env variable for JWT_SECRET
 
-const JWT_SECRET = "AnigalaxybyAbhilaksh";
-
+// Validation Schemas
 const signupBody = zod.object({
     username: zod.string().email(),
-    firstName: zod.string(),
-    lastName: zod.string(),
-    password: zod.string()
+    firstName: zod.string().min(1, "First name is required"),
+    lastName: zod.string().min(1, "Last name is required"),
+    password: zod.string().min(6, "Password must be at least 6 characters long")
 });
 
-router.post("/signup", async (req, res) => {
-    const { success } = signupBody.safeParse(req.body);
-    if (!success) {
-        return res.status(411).json({
-            msg: "incorrect inputs"
-        });
-    }
-
-    const existingUser = await User.findOne({
-        username: req.body.username
-    });
-
-    if (existingUser) {
-        return res.status(411).json({
-            msg: "Email already taken"
-        });
-    }
-
-    const user = await User.create({
-        username: req.body.username,
-        password: req.body.password,
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-    });
-
-    const userID = user._id;
-    const name=user.firstName;
-
-    const token = jwt.sign({
-        userID,name
-    }, JWT_SECRET);
-
-    res.json({
-        message: "User Created Successfully",
-        token: token
-    });
-});
-
-// signin
 const signinBody = zod.object({
     username: zod.string().email(),
-    password: zod.string()
+    password: zod.string().min(6, "Password must be at least 6 characters long")
 });
 
-router.post("/signin", async (req, res) => {
-    const { success } = signinBody.safeParse(req.body);
-    if (!success) {
-        return res.status(411).json({
-            msg: "Incorrect Inputs"
+// Signup Route
+router.post('/signup', async (req, res) => {
+    const validation = signupBody.safeParse(req.body);
+    if (!validation.success) {
+        return res.status(400).json({
+            msg: 'Invalid inputs',
+            errors: validation.error.errors
         });
     }
 
-    const user = await User.findOne({
-        username: req.body.username,
-        password: req.body.password
-    });
+    const { username, firstName, lastName, password } = req.body;
 
-    if (user) {
-        const token = jwt.sign({
-            userID: user._id
-        }, JWT_SECRET);
+    try {
+        // Check if user already exists
+        const existingUser = await User.findOne({ username });
+        if (existingUser) {
+            return res.status(409).json({
+                msg: 'Email already taken'
+            });
+        }
+
+        // Hash the password
+        const hashedPassword = await bcrypt.hash(password, 10);
+        console.log('Hashed Password:', hashedPassword);
+
+        // Create the user
+        const user = await User.create({
+            username,
+            firstName,
+            lastName,
+            password: hashedPassword
+        });
+        console.log('Saved User:', user);
+
+        // Generate a token
+        const token = jwt.sign(
+            { userID: user._id, name: user.firstName },
+            JWT_SECRET,
+            { expiresIn: '1h' }
+        );
+
+        res.status(201).json({
+            msg: 'User created successfully',
+            token
+        });
+    } catch (err) {
+        console.error('Signup Error:', err);
+        res.status(500).json({
+            msg: 'Internal server error'
+        });
+    }
+});
+
+// Signin Route
+router.post('/signin', async (req, res) => {
+    const validation = signinBody.safeParse(req.body);
+    if (!validation.success) {
+        return res.status(400).json({
+            msg: 'Invalid inputs',
+            errors: validation.error.errors
+        });
+    }
+
+    const { username, password } = req.body;
+
+    try {
+        // Check if the user exists
+        const user = await User.findOne({ username });
+        if (!user) {
+            return res.status(401).json({
+                msg: 'Invalid email'
+            });
+        }
+
+        // Verify the password
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            return res.status(401).json({
+                msg: 'Invalid password'
+            });
+        }
+
+        // Generate a token
+        const token = jwt.sign(
+            { userID: user._id, name: user.firstName },
+            JWT_SECRET,
+            { expiresIn: '1h' }
+        );
+        
         res.json({
-            msg:`Welcome ${req.body.username}`,
-            token: token
+            msg: `Welcome ${user.firstName}`,
+            token
         });
-        return;
+    } catch (err) {
+        console.error('Signin Error:', err);
+        res.status(500).json({
+            msg: 'Internal server error'
+        });
     }
-    res.status(411).json({
-        msg: "Error while logging in"
-    });
 });
 
 module.exports = router;

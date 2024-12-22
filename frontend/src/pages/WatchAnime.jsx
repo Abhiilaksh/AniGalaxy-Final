@@ -1,138 +1,198 @@
-import { useParams } from "react-router-dom";
-import { useState, useEffect } from "react";
-import EpisodeList from "../components/EpisodeList"; // Import the reusable component
-import { useLocation } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { useState, useEffect, useCallback } from "react";
+import EpisodeList from "../components/EpisodeList";
 import VideoPlayer from "../components/Player";
 import { Loader } from "../components/Spinner";
+import AnimeDiscussion from "../components/AnimeDiscussion";
 
+const ITEMS_PER_PAGE = 100;
 const animeKey = import.meta.env.VITE_ANIME_KEY;
 
 export const Watch = () => {
   const { anime } = useParams();
-  const [episodes, setEpisodes] = useState([]);
-  const [range, setRange] = useState([0, 100]); // Default range: 0–100
-  const [videoUrl, setVideoUrl] = useState(null);
-  const [videoLoading, setVideoLoading] = useState(true); // Track video loading state
-  const [subtitleUrl, setSubtitleUrl] = useState(null); // For subtitles
-  const [title, setTitle] = useState('');
-  const [path, setPath] = useState('');
   const location = useLocation();
+  const navigate = useNavigate();
 
-  // Extract the entire URL after the base domain
-  const fullPath = location.pathname.replace('/watch/', '') + location.search;
+  const [state, setState] = useState({
+    episodes: [],
+    range: [0, ITEMS_PER_PAGE],
+    videoUrl: null,
+    videoLoading: true,
+    subtitleUrl: null,
+    title: "",
+    dubAvailable: false,
+    isDub: false,
+  });
 
-  useEffect(() => {
-    const fetchEpisodes = async () => {
-      try {
-        // Fetch all episodes
-        const response = await fetch(`${animeKey}anime/${anime}/episodes`);
-        if (!response.ok) throw new Error("Failed to fetch episodes");
-        const result = await response.json();
-        setEpisodes(result.data.episodes);
+  const fullPath = location.pathname.replace("/watch/", "") + location.search;
 
-        // Find the episode that matches the current fullPath (episodeId)
-        const currentEpisode = result.data.episodes.find(ep => fullPath.includes(ep.episodeId));
-        if (currentEpisode) {
-          setTitle(currentEpisode.title);  // Set the title from the matched episode
-        }
-      } catch (error) {
-        console.error("Error fetching episodes:", error);
-      }
-    };
+  const fetchEpisodes = useCallback(async () => {
+    try {
+      const response = await fetch(`${animeKey}anime/${anime}/episodes`);
+      if (!response.ok) throw new Error("Failed to fetch episodes");
 
-    // Fetch episodes even if no ?ep= query
-    fetchEpisodes();
+      const result = await response.json();
+      const episodes = result.data.episodes;
+
+      const currentEpisode = episodes.find((ep) =>
+        fullPath.includes(ep.episodeId)
+      );
+
+      setState((prev) => ({
+        ...prev,
+        episodes,
+        title: currentEpisode?.title || "",
+      }));
+    } catch (error) {
+      console.error("Error fetching episodes:", error);
+    }
   }, [anime, fullPath]);
 
-  useEffect(() => {
-    const fetchVideo = async () => {
-      const currentPath = window.location.pathname.split('/watch/')[1] + window.location.search;
-      setPath(currentPath);
-      if (!fullPath.includes('?ep=')) return; // Ensure we're fetching video only when ?ep= is present
+  const fetchVideo = useCallback(async () => {
+    if (!fullPath.includes("?ep=")) return;
 
-      setVideoLoading(true); // Start video loading
-      try {
-        // Try primary server first
-        const link = await fetch(`${animeKey}episode/sources?animeEpisodeId=${fullPath}`);
-        if (!link.ok) throw new Error("Primary server failed");
+    setState((prev) => ({ ...prev, videoLoading: true }));
 
-        const responseData = await link.json();
-        if (!responseData.data?.sources?.length) throw new Error("No video sources available");
+    try {
+      const isDub = fullPath.includes("category=dub");
 
-        setVideoUrl(responseData.data.sources[0].url);
+      const [subResponse, dubResponse] = await Promise.all([
+        fetch(
+          `${animeKey}episode/sources?animeEpisodeId=${fullPath}&category=sub`
+        ),
+        fetch(
+          `${animeKey}episode/sources?animeEpisodeId=${fullPath}&category=dub`
+        ),
+      ]);
 
-        // Handle subtitles
-        const tracks = responseData.data.tracks || [];
-        let selectedSubtitle = null;
+      if (!subResponse.ok) throw new Error("Primary server failed");
 
-        if (tracks.length === 1) {
-          // If only one track is available, use it
-          selectedSubtitle = tracks[0].file;
-        } else {
-          // Find English subtitles, default, or fallback to the first track
-          selectedSubtitle =
-            tracks.find((track) => track.label?.toLowerCase() === "english")?.file ||
-            tracks.find((track) => track.default)?.file ||
-            tracks[0]?.file;
-        }
+      const subData = await subResponse.json();
+      const dubData = await dubResponse.json();
 
-        setSubtitleUrl(selectedSubtitle);
-      } catch (error) {
-        console.error("Error fetching video or subtitles:", error);
-      } finally {
-        setVideoLoading(false); // Stop video loading
-      }
-    };
+      if (!subData.data?.sources?.length) throw new Error("No video sources available");
 
-    fetchVideo();
+      const selectedSubtitle = isDub
+        ? null
+        : getSelectedSubtitle(subData.data.tracks);
+
+      const videoSource =
+        isDub && dubData.data?.sources?.length
+          ? dubData.data.sources[0].url
+          : subData.data.sources[0].url;
+
+      setState((prev) => ({
+        ...prev,
+        videoUrl: videoSource,
+        subtitleUrl: selectedSubtitle,
+        dubAvailable: dubResponse.ok && !!dubData.data?.sources?.length,
+        isDub: isDub && dubResponse.ok && !!dubData.data?.sources?.length,
+      }));
+    } catch (error) {
+      console.error("Error fetching video or subtitles:", error);
+    } finally {
+      setState((prev) => ({ ...prev, videoLoading: false }));
+    }
   }, [fullPath]);
 
-  // Create ranges for the episode list in chunks of 100
-  const totalRanges = Math.ceil(episodes.length / 100);
-  const ranges = [];
-  for (let i = 0; i < totalRanges; i++) {
-    ranges.push([i * 100, Math.min((i + 1) * 100, episodes.length)]);
-  }
+  useEffect(() => {
+    fetchEpisodes();
+  }, [fetchEpisodes]);
 
-  const handleRangeChange = (e) => {
-    const selectedRange = ranges[e.target.value];
-    setRange(selectedRange);
+  useEffect(() => {
+    fetchVideo();
+  }, [fetchVideo]);
+
+  const getSelectedSubtitle = (tracks = []) => {
+    if (tracks.length === 0) return null;
+    if (tracks.length === 1) return tracks[0].file;
+
+    return (
+      tracks.find((track) => track.label?.toLowerCase() === "english")?.file ||
+      tracks.find((track) => track.default)?.file ||
+      tracks[0]?.file
+    );
   };
 
+  const handleRangeChange = (e) => {
+    const totalRanges = Math.ceil(state.episodes.length / ITEMS_PER_PAGE);
+    const ranges = Array.from({ length: totalRanges }, (_, i) => [
+      i * ITEMS_PER_PAGE,
+      Math.min((i + 1) * ITEMS_PER_PAGE, state.episodes.length),
+    ]);
+
+    setState((prev) => ({
+      ...prev,
+      range: ranges[e.target.value],
+    }));
+  };
+
+  const handleAudioToggle = () => {
+    const basePath = fullPath.split("&category=")[0];
+    const newPath = state.isDub ? basePath : `${basePath}&category=dub`;
+    navigate(`/watch/${newPath}`);
+  };
+
+  const currentEpisode = state.episodes.find((ep) =>
+    fullPath.includes(ep.episodeId)
+  );
+  const episodeNumber = currentEpisode?.episodeId.match(/\d+/)?.[0] || null;
+
   return (
-    <>
-      <div className="pt-32 flex justify-center items-center text-2xl font-bold">
-        {title}
-      </div>
-  
-      <div className="flex flex-col bg-black lg:flex-row lg:space-x-4">
-        {/* Video Section */}
-        <div
-          className="bg-black w-full lg:w-[80%] ml-0 lg:ml-8 pl-2 pr-4 py-8 lg:py-4 order-1 lg:order-1"
-          style={{ height: videoUrl ? "auto" : "300px" }}
-        >
-          {videoLoading ? ( // Show loader when video is loading
+    <div className="min-h-screen bg-black">
+      
+      <div className="flex flex-col lg:flex-row lg:space-x-4 p-4">
+        <div className="w-full lg:w-[80%] min-h-[300px]">
+        <h1 className="pt-32 text-center text-2xl font-bold text-white">
+        {state.title}
+      </h1>
+
+          {state.videoLoading ? (
             <div className="flex items-center justify-center h-full">
               <Loader />
             </div>
           ) : (
-            <div className="h-full">
-              <VideoPlayer videoUrl={videoUrl} subtitleUrl={subtitleUrl} />
-            </div>
+            <VideoPlayer
+              videoUrl={state.videoUrl}
+              subtitleUrl={state.subtitleUrl}
+            />
           )}
+      <div className="text-center mt-[-20px] sm:mt-4 mb-4 sm:mb-2">
+            {state.dubAvailable && (
+            <button
+              onClick={handleAudioToggle}
+              className="mt-4 px-4 py-2 bg-pink-100 text-black rounded hover:bg-pink-200 transition-colors"
+            >
+              Switch to {state.isDub ? "Sub" : "Dub"}
+            </button>
+          )}
+            </div>
+          
         </div>
-  
-        {/* Episode List Section */}
-        <div className="w-full lg:w-auto order-2 lg:order-2">
+
+        <div className="w-full lg:w-auto mt-4 md:mt-32">
           <EpisodeList
-            episodes={episodes}
-            ranges={ranges}
-            range={range}
+            episodes={state.episodes}
+            ranges={Array.from(
+              {
+                length: Math.ceil(state.episodes.length / ITEMS_PER_PAGE),
+              },
+              (_, i) => [
+                i * ITEMS_PER_PAGE,
+                Math.min((i + 1) * ITEMS_PER_PAGE, state.episodes.length),
+              ]
+            )}
+            range={state.range}
             handleRangeChange={handleRangeChange}
           />
         </div>
       </div>
-    </>
+           
+      {/* {currentEpisode && (
+        <div className="mt-8 px-4">
+          <AnimeDiscussion animeId={anime} episode={episodeNumber} />
+        </div>
+      )} */}
+    </div>
   );
-  
 };

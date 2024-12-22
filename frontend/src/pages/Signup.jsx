@@ -61,6 +61,7 @@ const Signup = () => {
               }}
               placeholder="johndoe@gmail.com"
               label={"Email"}
+              type={"email"}
             />
             <InputBox
               onChange={(e) => {
@@ -68,6 +69,7 @@ const Signup = () => {
               }}
               placeholder="123456"
               label={"Password"}
+              type={"password"}
             />
             <div className="pt-4">
               <Button
@@ -83,6 +85,7 @@ const Signup = () => {
                   );
                   localStorage.setItem("token", response.data.token);
                   navigate("/");
+                  window.location.reload();
                 }}
                 label={"Sign up"}
               />

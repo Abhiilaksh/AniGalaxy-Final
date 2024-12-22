@@ -9,6 +9,9 @@ const VideoPlayer = ({ videoUrl, subtitleUrl }) => {
 
   useEffect(() => {
     if (videoNode.current) {
+     
+      
+
       // Initialize Video.js player
       player.current = videojs(videoNode.current, {
         autoplay: true,
@@ -41,24 +44,18 @@ const VideoPlayer = ({ videoUrl, subtitleUrl }) => {
         if (player.current.isFullscreen()) {
           // Lock screen orientation to landscape when fullscreen is activated
           if (screen.orientation && screen.orientation.lock) {
-            screen.orientation.lock("landscape").catch((err) => {
-              console.warn("Orientation lock failed:", err);
-            });
-          }
-        } else {
-          // Unlock screen orientation when exiting fullscreen
-          if (screen.orientation && screen.orientation.unlock) {
-            screen.orientation.unlock();
+            screen.orientation
+              .lock("landscape")
+              .catch((err) => console.warn("Orientation lock failed:", err));
           }
         }
       };
 
       // Listen for Video.js fullscreenchange event
       player.current.on("fullscreenchange", handleFullscreenChange);
-
-   
-     
     }
+
+    
   }, [videoUrl, subtitleUrl]);
 
   return (

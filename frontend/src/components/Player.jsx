@@ -19,7 +19,7 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro }) => {
         button.className = `absolute z-10 px-8 py-4 rounded-md hover:bg-opacity-100 ${additionalClasses}`;
         button.innerHTML = text;
         button.onclick = onClickHandler;
-        button.style.display = "none"; // Start with buttons hidden
+        button.style.display = "none";
         button.style.backgroundColor = "rgba(255, 250, 250, 0.88)";
         button.style.color = "black";
         return button;
@@ -61,7 +61,7 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro }) => {
               player.current.currentTime(intro.end);
             }
           },
-          "bottom-14 right-12" // Position for the intro button
+          "bottom-14 right-12"
         );
 
         skipOutroButton.current = createButton(
@@ -71,7 +71,7 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro }) => {
               player.current.currentTime(outro.end);
             }
           },
-          "bottom-14 right-12" // Position for the outro button
+          "bottom-14 right-12"
         );
 
         videoContainer.appendChild(skipIntroButton.current);
@@ -80,10 +80,39 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro }) => {
 
       createAndAppendButtons();
 
+      // Keyboard controls
+      const handleKeyPress = (e) => {
+        if (!player.current || document.activeElement.tagName === 'INPUT') return;
+
+        switch(e.code) {
+          case 'Space':
+            e.preventDefault();
+            player.current.paused() ? player.current.play() : player.current.pause();
+            break;
+          case 'ArrowLeft':
+            e.preventDefault();
+            player.current.currentTime(Math.max(0, player.current.currentTime() - 5));
+            break;
+          case 'ArrowRight':
+            e.preventDefault();
+            player.current.currentTime(player.current.currentTime() + 5);
+            break;
+          case 'ArrowUp':
+            e.preventDefault();
+            player.current.volume(Math.min(1, player.current.volume() + 0.1));
+            break;
+          case 'ArrowDown':
+            e.preventDefault();
+            player.current.volume(Math.max(0, player.current.volume() - 0.1));
+            break;
+        }
+      };
+
+      document.addEventListener('keydown', handleKeyPress);
+
       // Fullscreen event listener
       const handleFullscreenChange = () => {
         if (player.current.isFullscreen()) {
-          // Lock screen orientation to landscape when fullscreen is activated
           if (screen.orientation && screen.orientation.lock) {
             screen.orientation
               .lock("landscape")
@@ -92,21 +121,17 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro }) => {
         }
       };
 
-      // Listen for Video.js fullscreenchange event
       player.current.on("fullscreenchange", handleFullscreenChange);
 
-      // Time update handler to show/hide skip buttons
       const handleTimeUpdate = () => {
         const currentTime = player.current.currentTime();
 
-        // Show/hide intro skip button only in fullscreen
         if (player.current.isFullscreen() && intro && currentTime >= intro.start && currentTime < intro.end) {
           skipIntroButton.current.style.display = "block";
         } else {
           skipIntroButton.current.style.display = "none";
         }
 
-        // Show/hide outro skip button only in fullscreen
         if (player.current.isFullscreen() && outro && currentTime >= outro.start && currentTime < outro.end) {
           skipOutroButton.current.style.display = "block";
         } else {
@@ -115,6 +140,9 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro }) => {
       };
 
       player.current.on("timeupdate", handleTimeUpdate);
+
+      // Cleanup
+      
     }
   }, [videoUrl, subtitleUrl, intro, outro]);
 

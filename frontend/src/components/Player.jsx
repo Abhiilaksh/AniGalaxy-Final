@@ -19,7 +19,7 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro }) => {
         button.className = `absolute z-10 px-8 py-4 rounded-md hover:bg-opacity-100 ${additionalClasses}`;
         button.innerHTML = text;
         button.onclick = onClickHandler;
-        button.style.display = "none"; // Start with buttons hidden
+        button.style.display = "none";
         button.style.backgroundColor = "rgba(255, 250, 250, 0.88)";
         button.style.color = "black";
         return button;
@@ -53,84 +53,96 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro }) => {
       });
 
       // Create skip buttons
-      skipIntroButton.current = createButton(
-        "Skip Intro",
-        () => {
-          if (intro && player.current) {
-            player.current.currentTime(intro.end);
-          }
-        },
-        "bottom-14 right-12"
-      );
+      const createAndAppendButtons = () => {
+        skipIntroButton.current = createButton(
+          "Skip Intro",
+          () => {
+            if (intro && player.current) {
+              player.current.currentTime(intro.end);
+            }
+          },
+          "bottom-14 right-12"
+        );
 
-      skipOutroButton.current = createButton(
-        "Skip Outro",
-        () => {
-          if (outro && player.current) {
-            player.current.currentTime(outro.end);
-          }
-        },
-        "bottom-14 right-12"
-      );
+        skipOutroButton.current = createButton(
+          "Skip Outro",
+          () => {
+            if (outro && player.current) {
+              player.current.currentTime(outro.end);
+            }
+          },
+          "bottom-14 right-12"
+        );
+
+        videoContainer.appendChild(skipIntroButton.current);
+        videoContainer.appendChild(skipOutroButton.current);
+      };
+
+      createAndAppendButtons();
+
+      // Keyboard controls
+      const handleKeyPress = (e) => {
+        if (!player.current || document.activeElement.tagName === 'INPUT') return;
+
+        switch(e.code) {
+          case 'Space':
+            e.preventDefault();
+            player.current.paused() ? player.current.play() : player.current.pause();
+            break;
+          case 'ArrowLeft':
+            e.preventDefault();
+            player.current.currentTime(Math.max(0, player.current.currentTime() - 5));
+            break;
+          case 'ArrowRight':
+            e.preventDefault();
+            player.current.currentTime(player.current.currentTime() + 5);
+            break;
+          case 'ArrowUp':
+            e.preventDefault();
+            player.current.volume(Math.min(1, player.current.volume() + 0.1));
+            break;
+          case 'ArrowDown':
+            e.preventDefault();
+            player.current.volume(Math.max(0, player.current.volume() - 0.1));
+            break;
+        }
+      };
+
+      document.addEventListener('keydown', handleKeyPress);
 
       // Fullscreen event listener
       const handleFullscreenChange = () => {
-        const isFullscreen = player.current.isFullscreen();
-
-        if (isFullscreen) {
-          // Lock screen orientation to landscape when fullscreen is activated
+        if (player.current.isFullscreen()) {
           if (screen.orientation && screen.orientation.lock) {
             screen.orientation
               .lock("landscape")
               .catch((err) => console.warn("Orientation lock failed:", err));
           }
-
-          // Append buttons to fullscreen container
-          if (!videoContainer.contains(skipIntroButton.current)) {
-            videoContainer.appendChild(skipIntroButton.current);
-          }
-          if (!videoContainer.contains(skipOutroButton.current)) {
-            videoContainer.appendChild(skipOutroButton.current);
-          }
-        } else {
-          // Hide buttons when exiting fullscreen
-          if (skipIntroButton.current) skipIntroButton.current.style.display = "none";
-          if (skipOutroButton.current) skipOutroButton.current.style.display = "none";
         }
       };
 
-      // Time update handler to show/hide skip buttons
+      player.current.on("fullscreenchange", handleFullscreenChange);
+
       const handleTimeUpdate = () => {
         const currentTime = player.current.currentTime();
 
-        // Only show buttons if the player is in fullscreen mode
-        if (player.current.isFullscreen()) {
-          // Show/hide intro skip button
-          if (intro && currentTime >= intro.start && currentTime < intro.end) {
-            skipIntroButton.current.style.display = "block";
-          } else {
-            skipIntroButton.current.style.display = "none";
-          }
-
-          // Show/hide outro skip button
-          if (outro && currentTime >= outro.start && currentTime < outro.end) {
-            skipOutroButton.current.style.display = "block";
-          } else {
-            skipOutroButton.current.style.display = "none";
-          }
+        if (player.current.isFullscreen() && intro && currentTime >= intro.start && currentTime < intro.end) {
+          skipIntroButton.current.style.display = "block";
         } else {
-          // Hide buttons if not in fullscreen
-          if (skipIntroButton.current) skipIntroButton.current.style.display = "none";
-          if (skipOutroButton.current) skipOutroButton.current.style.display = "none";
+          skipIntroButton.current.style.display = "none";
+        }
+
+        if (player.current.isFullscreen() && outro && currentTime >= outro.start && currentTime < outro.end) {
+          skipOutroButton.current.style.display = "block";
+        } else {
+          skipOutroButton.current.style.display = "none";
         }
       };
 
-      // Listen for Video.js events
-      player.current.on("fullscreenchange", handleFullscreenChange);
       player.current.on("timeupdate", handleTimeUpdate);
 
-      // Cleanup on component unmount
-     
+      // Cleanup
+      
     }
   }, [videoUrl, subtitleUrl, intro, outro]);
 

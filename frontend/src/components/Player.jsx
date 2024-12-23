@@ -70,7 +70,7 @@ const VideoPlayer = ({ videoUrl, subtitleUrl }) => {
         style={{
           height: "100%", // Ensure the video fills the container height
           width: "100%", // Ensure the video fills the container width
-          objectFit: "fill", // Adjust this based on your preference (cover, contain, fill)
+          objectFit: "contain", // Adjust this based on your preference (cover, contain, fill)
         }}
       />
     </div>

@@ -25,6 +25,8 @@ export const Watch = () => {
     dubAvailable: false,
     isDub: false,
   });
+  const [intro,setIntro]=useState({})
+  const[outro,setOutro]=useState({})
 
   const fullPath = location.pathname.replace("/watch/", "") + location.search;
 
@@ -71,6 +73,8 @@ export const Watch = () => {
 
       const subData = await subResponse.json();
       const dubData = await dubResponse.json();
+      setIntro(subData.data.intro);
+      setOutro(subData.data.outro)
 
       if (!subData.data?.sources?.length) throw new Error("No video sources available");
 
@@ -156,6 +160,8 @@ export const Watch = () => {
             <VideoPlayer
               videoUrl={state.videoUrl}
               subtitleUrl={state.subtitleUrl}
+              intro={intro}
+              outro={outro}
             />
           )}
         </div>

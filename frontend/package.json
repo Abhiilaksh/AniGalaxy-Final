@@ -33,6 +33,8 @@
     "tw-elements-react": "^1.0.0-alpha-end",
     "video.js": "^8.21.0",
     "videojs-contrib-hls": "^5.15.0",
+    "videojs-contrib-quality-levels": "^4.1.0",
+    "videojs-hls-quality-selector": "^2.0.0",
     "videojs-http-source-selector": "^1.1.6",
     "videojs-vtt-thumbnails": "^0.0.13"
   },

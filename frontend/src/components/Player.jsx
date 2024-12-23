@@ -103,10 +103,35 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro }) => {
         }
       };
 
+      // Handle fullscreen change
+      const handleFullscreenChange = () => {
+        const isFullscreen = player.current.isFullscreen();
+
+        if (isFullscreen) {
+          // Show buttons during fullscreen
+          if (intro) skipIntroButton.current.style.display = "block";
+          if (outro) skipOutroButton.current.style.display = "block";
+        } else {
+          // Hide buttons when not fullscreen
+          skipIntroButton.current.style.display = "none";
+          skipOutroButton.current.style.display = "none";
+        }
+      };
+
       player.current.on("timeupdate", handleTimeUpdate);
+      player.current.on("fullscreenchange", handleFullscreenChange);
 
       // Cleanup on unmount
-     
+      return () => {
+       
+        if (skipIntroButton.current) {
+          videoContainer.removeChild(skipIntroButton.current);
+        }
+
+        if (skipOutroButton.current) {
+          videoContainer.removeChild(skipOutroButton.current);
+        }
+      };
     }
   }, [videoUrl, subtitleUrl, intro, outro]);
 

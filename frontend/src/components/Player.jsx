@@ -13,15 +13,23 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro }) => {
     if (videoNode.current) {
       const videoContainer = videoNode.current.parentNode;
 
-      // Create custom buttons
+      // Create custom buttons with inline styles
       const createButton = (text, onClickHandler, additionalClasses) => {
         const button = document.createElement("button");
-        button.className = `absolute z-10 px-8 py-4 rounded-md hover:bg-opacity-100 ${additionalClasses}`;
+        button.className = `skip-button ${additionalClasses}`;
         button.innerHTML = text;
         button.onclick = onClickHandler;
-        button.style.display = "none";
+
+        // Add inline styles for consistent rendering
+        button.style.position = "absolute";
+        button.style.zIndex = "10";
+        button.style.padding = "8px 16px";
+        button.style.borderRadius = "4px";
         button.style.backgroundColor = "rgba(255, 250, 250, 0.88)";
         button.style.color = "black";
+        button.style.cursor = "pointer";
+        button.style.display = "none"; // Default to hidden
+
         return button;
       };
 
@@ -52,87 +60,43 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro }) => {
           : [],
       });
 
-      // Create skip buttons
-      const createAndAppendButtons = () => {
-        skipIntroButton.current = createButton(
-          "Skip Intro",
-          () => {
-            if (intro && player.current) {
-              player.current.currentTime(intro.end);
-            }
-          },
-          "bottom-14 right-12"
-        );
-
-        skipOutroButton.current = createButton(
-          "Skip Outro",
-          () => {
-            if (outro && player.current) {
-              player.current.currentTime(outro.end);
-            }
-          },
-          "bottom-14 right-12"
-        );
-
-        videoContainer.appendChild(skipIntroButton.current);
-        videoContainer.appendChild(skipOutroButton.current);
-      };
-
-      createAndAppendButtons();
-
-      // Keyboard controls
-      const handleKeyPress = (e) => {
-        if (!player.current || document.activeElement.tagName === 'INPUT') return;
-
-        switch(e.code) {
-          case 'Space':
-            e.preventDefault();
-            player.current.paused() ? player.current.play() : player.current.pause();
-            break;
-          case 'ArrowLeft':
-            e.preventDefault();
-            player.current.currentTime(Math.max(0, player.current.currentTime() - 5));
-            break;
-          case 'ArrowRight':
-            e.preventDefault();
-            player.current.currentTime(player.current.currentTime() + 5);
-            break;
-          case 'ArrowUp':
-            e.preventDefault();
-            player.current.volume(Math.min(1, player.current.volume() + 0.1));
-            break;
-          case 'ArrowDown':
-            e.preventDefault();
-            player.current.volume(Math.max(0, player.current.volume() - 0.1));
-            break;
-        }
-      };
-
-      document.addEventListener('keydown', handleKeyPress);
-
-      // Fullscreen event listener
-      const handleFullscreenChange = () => {
-        if (player.current.isFullscreen()) {
-          if (screen.orientation && screen.orientation.lock) {
-            screen.orientation
-              .lock("landscape")
-              .catch((err) => console.warn("Orientation lock failed:", err));
+      // Create and append skip buttons
+      skipIntroButton.current = createButton(
+        "Skip Intro",
+        () => {
+          if (intro && player.current) {
+            player.current.currentTime(intro.end);
           }
-        }
-      };
+        },
+        "bottom-14 right-12"
+      );
 
-      player.current.on("fullscreenchange", handleFullscreenChange);
+      skipOutroButton.current = createButton(
+        "Skip Outro",
+        () => {
+          if (outro && player.current) {
+            player.current.currentTime(outro.end);
+          }
+        },
+        "bottom-14 right-20"
+      );
 
+      videoContainer.appendChild(skipIntroButton.current);
+      videoContainer.appendChild(skipOutroButton.current);
+
+      // Handle time update and show/hide buttons
       const handleTimeUpdate = () => {
         const currentTime = player.current.currentTime();
 
-        if (player.current.isFullscreen() && intro && currentTime >= intro.start && currentTime < intro.end) {
+        // Show skip intro button
+        if (intro && currentTime >= intro.start && currentTime < intro.end) {
           skipIntroButton.current.style.display = "block";
         } else {
           skipIntroButton.current.style.display = "none";
         }
 
-        if (player.current.isFullscreen() && outro && currentTime >= outro.start && currentTime < outro.end) {
+        // Show skip outro button
+        if (outro && currentTime >= outro.start && currentTime < outro.end) {
           skipOutroButton.current.style.display = "block";
         } else {
           skipOutroButton.current.style.display = "none";
@@ -141,8 +105,8 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro }) => {
 
       player.current.on("timeupdate", handleTimeUpdate);
 
-      // Cleanup
-      
+      // Cleanup on unmount
+     
     }
   }, [videoUrl, subtitleUrl, intro, outro]);
 

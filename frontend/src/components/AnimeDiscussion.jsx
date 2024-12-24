@@ -26,6 +26,12 @@ export const AnimeDiscussion = ({ animeId }) => {
                     `https://anigalaxy-final-1.onrender.com/api/v1/anime/comment?animeId=${animeId}`
                 );
                 
+                if (response.status === 403) {
+                    // Token is invalid, remove it from localStorage and redirect to login
+                    localStorage.removeItem("token");
+                    navigate("/signin");
+                    return;
+                  }
                 if (!response.ok) {
                     throw new Error(`Failed to fetch comments: ${response.statusText}`);
                 }

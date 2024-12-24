@@ -5,7 +5,6 @@ const bcrypt = require('bcryptjs'); // Use bcryptjs for hashing
 const jwt = require('jsonwebtoken');
 const { User } = require('../db');
 
-
 const JWT_SECRET =  "AnigalaxybyAbhilaksh"; // Use an env variable for JWT_SECRET
 
 // Validation Schemas
@@ -59,7 +58,7 @@ router.post('/signup', async (req, res) => {
         const token = jwt.sign(
             { userID: user._id, name: user.firstName },
             JWT_SECRET,
-            { expiresIn: '1h' }
+            { expiresIn: '24hr' }
         );
 
         res.status(201).json({
@@ -121,5 +120,106 @@ router.post('/signin', async (req, res) => {
         });
     }
 });
+
+
+const authenticateToken = (req, res, next) => {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+        return res.status(401).json({ error: "No token provided" });
+    }
+    try {
+        const decoded = jwt.verify(token, JWT_SECRET);
+        req.user = decoded; // Attach decoded token payload to the request
+        next();
+    } catch (error) {
+        return res.status(403).json({ error: "Invalid token" });
+    }
+};
+
+// Route to mark an anime as favorite
+router.post("/fav", authenticateToken, async (req, res) => {
+    try {
+        const { animeId } = req.body;
+        if (!animeId) {
+            return res.status(400).json({ error: "animeId is required" });
+        }
+        const userId = req.user.userID;
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        // Check if anime is already in the favouriteAnime array
+        if (user.favouriteAnime.includes(animeId)) {
+            return res.status(200).json({
+                message: "Anime is already in your favorites",
+            });
+        }
+
+        // Use MongoDB's addToSet to ensure the animeId is unique
+        user.favouriteAnime.addToSet(animeId);
+        await user.save();
+
+        return res.status(200).json({
+            message: "Anime marked as favorite successfully",
+        });
+    } catch (error) {
+        console.error("Error marking anime as favorite:", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+});
+router.get("/fav", authenticateToken, async (req, res) => {
+    try {
+     
+      const userId = req.user.userID; 
+      const user = await User.findById(userId);
+      const animeId = req.query.id;
+      console.log(animeId);
+  
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+  
+   
+      const favourites = user.favouriteAnime;
+      console.log(favourites);
+      const isFavourite = favourites.some((fav) => fav === animeId);
+  
+      return res.status(200).json({  isFavourite });
+    } catch (error) {
+      console.error("Error fetching favourites:", error);
+      return res.status(500).json({ message: "Server error" });
+    }
+  });
+  router.delete("/fav", authenticateToken, async (req, res) => {
+    try {
+      const userId = req.user.userID;
+      const user = await User.findById(userId);
+      const animeId = req.body.animeId;
+  
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+  
+      const favourites = user.favouriteAnime;
+      
+      // Check if the anime is in the favourites array
+      const isFavourite = favourites.includes(animeId);
+      
+      if (isFavourite) {
+       
+        user.favouriteAnime = favourites.filter((fav) => fav !== animeId);
+        await user.save(); 
+      }
+  
+      // Return the updated response
+      return res.status(200).json({ isFavourite, favouriteAnime: user.favouriteAnime });
+    } catch (error) {
+      console.error("Error fetching favourites:", error);
+      return res.status(500).json({ message: "Server error" });
+    }
+  });
+  
+
 
 module.exports = router;

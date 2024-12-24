@@ -106,7 +106,7 @@ router.post('/signin', async (req, res) => {
         const token = jwt.sign(
             { userID: user._id, name: user.firstName },
             JWT_SECRET,
-            { expiresIn: '1h' }
+            { expiresIn: '24h' }
         );
         
         res.json({
@@ -219,7 +219,57 @@ router.get("/fav", authenticateToken, async (req, res) => {
       return res.status(500).json({ message: "Server error" });
     }
   });
-  
+
+  router.get("/verify-token",authenticateToken,async(req,res)=>{
+    res.status(200).json({ success: true, validToken: true });
+
+  })
+
+  router.get("/profile", authenticateToken, async (req, res) => {
+    try {
+        const userId = req.user.userID;
+        if (!userId) {
+            return res.status(400).json({ error: "Invalid user ID" });
+        }
+        const user = await User.findById(userId).select("-password -__v");
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        res.status(200).json({ user });
+    } catch (error) {
+        console.error("Error fetching user profile:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+
+router.put("/profile", authenticateToken, async (req, res) => {
+    try {
+        const userId = req.user.userID; // Get user ID from the token
+        const { firstName, username, email } = req.body; // Fields to potentially update
+
+        // Find the user to update their profile
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found." });
+        }
+
+        // Update fields if provided
+        if (firstName) user.firstName = firstName;
+        if (username) user.username = username;
+        if (email) user.email = email;
+
+        // Save the updated user
+        await user.save();
+
+        // Send the updated user data back to the client
+        res.status(200).json({ user });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Server error." });
+    }
+});
 
 
 module.exports = router;

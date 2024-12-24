@@ -19,6 +19,7 @@ export const AnimeInfo = () => {
   const [recommendedAnime, setRecommendedAnime] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isFavourite, setIsFavourite] = useState(false); // For tracking if anime is added to favourites
+  const [loadingFav, setLoadingFav] = useState(false); // For tracking the loading state of adding/removing from favourites
   const animeKey = import.meta.env.VITE_ANIME_KEY;
   const navigate = useNavigate(); // For redirecting to login page if not logged in
 
@@ -51,9 +52,6 @@ export const AnimeInfo = () => {
     fetchInfo();
   }, [id]);
 
-  
-  
-
   useEffect(() => {
     const checkIfFavourite = async () => {
       const token = localStorage.getItem("token");
@@ -65,14 +63,14 @@ export const AnimeInfo = () => {
               "Authorization": `Bearer ${token}`,
             },
           });
-          
+
           if (response.status === 403) {
             // Token is invalid, remove it from localStorage and redirect to login
             localStorage.removeItem("token");
             navigate("/signin");
             return;
           }
-          
+
           const data = await response.json();
           setIsFavourite(data.isFavourite || false);
         } catch (error) {
@@ -82,45 +80,46 @@ export const AnimeInfo = () => {
     };
     checkIfFavourite();
   }, [id, navigate]);
-   
-  
 
- const addFav = async () => {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    navigate("/signin");
-    return;
-  }
-
-  try {
-    const response = await fetch(`https://anigalaxy-final-1.onrender.com/api/v1/user/fav`, {
-      method: isFavourite ? "DELETE" : "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`,
-      },
-      body: JSON.stringify({ animeId: id }),
-    });
-
-    if (response.status === 403) {
-      // Token is invalid, remove it from localStorage and redirect to login
-      localStorage.removeItem("token");
+  const toggleFav = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
       navigate("/signin");
       return;
     }
 
-    if (response.ok) {
-      setIsFavourite(!isFavourite);
-    } else {
-      const errorData = await response.json();
-      console.error("Failed to toggle favourite anime:", errorData.error);
-    }
-  } catch (error) {
-    console.error("Error while toggling favourite anime:", error);
-  }
-};
+    setLoadingFav(true); // Set loading to true before making the request
 
-  
+    try {
+      const response = await fetch(`https://anigalaxy-final-1.onrender.com/api/v1/user/fav`, {
+        method: isFavourite ? "DELETE" : "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({ animeId: id }),
+      });
+
+      if (response.status === 403) {
+        // Token is invalid, remove it from localStorage and redirect to login
+        localStorage.removeItem("token");
+        navigate("/signin");
+        return;
+      }
+
+      if (response.ok) {
+        setIsFavourite(!isFavourite); // Toggle the favourite state
+      } else {
+        const errorData = await response.json();
+        console.error("Failed to toggle favourite anime:", errorData.error);
+      }
+    } catch (error) {
+      console.error("Error while toggling favourite anime:", error);
+    } finally {
+      setLoadingFav(false); // Set loading to false once the request is finished
+    }
+  };
+
   return (
     <>
       {loading ? (
@@ -181,12 +180,11 @@ export const AnimeInfo = () => {
                     </button>
                   </Link>
                   <button
-                    className={`py-[12px] ${
-                      isFavourite ? "bg-green-200" : "bg-white"
-                    } text-black font-medium text-xs sm:text-sm px-4 sm:py-4 rounded-2xl shadow-md cursor-pointer transition duration-200 ease-in-out`}
-                    onClick={addFav}
+                    className={`py-[12px] ${isFavourite ? "bg-green-200" : "bg-white"} text-black font-medium text-xs sm:text-sm px-4 sm:py-4 rounded-2xl shadow-md cursor-pointer transition duration-200 ease-in-out`}
+                    onClick={toggleFav}
+                    disabled={loadingFav} // Disable the button while loading
                   >
-                    {isFavourite ? "Added to Favourites" : "Add To Favourites"}
+                    {loadingFav ? "Processing..." : isFavourite ? "Remove from Favourites" : "Add To Favourites"}
                   </button>
                 </div>
                 <div className="pt-4 w-[320px] lg:w-[640px] text-sm pl-2">

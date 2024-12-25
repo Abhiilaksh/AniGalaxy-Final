@@ -57,7 +57,7 @@ export const AnimeInfo = () => {
       const token = localStorage.getItem("token");
       if (token) {
         try {
-          const response = await fetch(`https://anigalaxy-final-1.onrender.com/api/v1/user/fav?id=${id}`, {
+          const response = await fetch(`https://api.anigalaxy.xyz/api/v1/user/fav?id=${id}`, {
             method: "GET",
             headers: {
               "Authorization": `Bearer ${token}`,
@@ -91,7 +91,7 @@ export const AnimeInfo = () => {
     setLoadingFav(true); // Set loading to true before making the request
 
     try {
-      const response = await fetch(`https://anigalaxy-final-1.onrender.com/api/v1/user/fav`, {
+      const response = await fetch(`https://api.anigalaxy.xyz/api/v1/user/fav`, {
         method: isFavourite ? "DELETE" : "POST",
         headers: {
           "Content-Type": "application/json",

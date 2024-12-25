@@ -54,7 +54,7 @@ export const Profile = () => {
             }
 
             try {
-                const response = await fetch("https://anigalaxy-final-1.onrender.com/api/v1/user/profile", {
+                const response = await fetch("https://api.anigalaxy.xyz/api/v1/user/profile", {
                     headers: {
                         Authorization: `Bearer ${token}`,
                         "Content-Type": "application/json",
@@ -109,7 +109,7 @@ export const Profile = () => {
         const token = localStorage.getItem("token");
 
         try {
-            const response = await fetch("https://anigalaxy-final-1.onrender.com/api/v1/user/profile", {
+            const response = await fetch("https://api.anigalaxy.xyz/api/v1/user/profile", {
                 method: "PUT",
                 headers: {
                     Authorization: `Bearer ${token}`,

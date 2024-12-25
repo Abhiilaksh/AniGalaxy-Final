@@ -23,7 +23,7 @@ export const AnimeDiscussion = ({ animeId }) => {
                 }
 
                 const response = await fetch(
-                    `https://anigalaxy-final-1.onrender.com/api/v1/anime/comment?animeId=${animeId}`
+                    `https://api.anigalaxy.xyz/api/v1/anime/comment?animeId=${animeId}`
                 );
                 
                 if (response.status === 403) {
@@ -65,7 +65,7 @@ export const AnimeDiscussion = ({ animeId }) => {
             setIsSubmitting(true);
             setError(null);
             
-            const response = await fetch("https://anigalaxy-final-1.onrender.com/api/v1/anime/comment", {
+            const response = await fetch("https://api.anigalaxy.xyz/api/v1/anime/comment", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

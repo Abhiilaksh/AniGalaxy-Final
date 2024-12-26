@@ -72,7 +72,7 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro, next }) => {
           if (next) {
             nextEpisodeButton.current = document.createElement("button");
             nextEpisodeButton.current.className =
-              "absolute z-50 px-8 py-4 rounded-md hover:bg-opacity-100 bottom-14 right-28";
+              "absolute z-50 px-8 py-4 rounded-md hover:bg-opacity-100 bottom-14 right-12";
             nextEpisodeButton.current.innerHTML = "Next Episode";
             nextEpisodeButton.current.style.display = "none";
             nextEpisodeButton.current.style.position = "absolute";

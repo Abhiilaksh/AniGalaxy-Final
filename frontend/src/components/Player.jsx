@@ -84,6 +84,41 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro }) => {
 
       createAndAppendButtons();
 
+      // Ensure buttons show on fullscreen
+      const handleFullscreenChange = () => {
+        if (player.current.isFullscreen()) {
+          if (screen.orientation && screen.orientation.lock) {
+            screen.orientation
+              .lock("landscape")
+              .catch((err) => console.warn("Orientation lock failed:", err));
+          }
+
+          // Update button visibility on fullscreen toggle
+          updateButtonVisibility();
+        }
+      };
+
+      // Handle time updates for button visibility
+      const updateButtonVisibility = () => {
+        const currentTime = player.current.currentTime();
+
+        if (intro && currentTime >= intro.start && currentTime < intro.end) {
+          skipIntroButton.current.style.display = "block";
+        } else {
+          skipIntroButton.current.style.display = "none";
+        }
+
+        if (outro && currentTime >= outro.start && currentTime < outro.end) {
+          skipOutroButton.current.style.display = "block";
+        } else {
+          skipOutroButton.current.style.display = "none";
+        }
+      };
+
+      // Event listeners
+      player.current.on("fullscreenchange", handleFullscreenChange);
+      player.current.on("timeupdate", updateButtonVisibility);
+
       // Keyboard controls
       const handleKeyPress = (e) => {
         if (!player.current || document.activeElement.tagName === "INPUT") return;
@@ -115,39 +150,6 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro }) => {
       };
 
       document.addEventListener("keydown", handleKeyPress);
-
-      // Handle fullscreen and switch to landscape
-      const handleFullscreenChange = () => {
-        if (player.current.isFullscreen()) {
-          if (screen.orientation && screen.orientation.lock) {
-            screen.orientation
-              .lock("landscape")
-              .catch((err) => console.warn("Orientation lock failed:", err));
-          }
-        }
-      };
-
-      player.current.on("fullscreenchange", handleFullscreenChange);
-
-      const handleTimeUpdate = () => {
-        const currentTime = player.current.currentTime();
-
-        // Show skip intro button during the intro section
-        if (intro && currentTime >= intro.start && currentTime < intro.end) {
-          skipIntroButton.current.style.display = "block";
-        } else {
-          skipIntroButton.current.style.display = "none";
-        }
-
-        // Show skip outro button during the outro section
-        if (outro && currentTime >= outro.start && currentTime < outro.end) {
-          skipOutroButton.current.style.display = "block";
-        } else {
-          skipOutroButton.current.style.display = "none";
-        }
-      };
-
-      player.current.on("timeupdate", handleTimeUpdate);
     }
   }, [videoUrl, subtitleUrl, intro, outro]);
 

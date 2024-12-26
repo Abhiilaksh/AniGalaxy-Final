@@ -72,7 +72,7 @@ const Navbar = () => {
       {isPhone ? (
         <div className="flex justify-between pt-2">
           <Link to="/" className="pl-2">
-            <Heading label="AniGalaxy" size="2xl" />
+            <Heading label="AniGalaxy" size="2xl" color={'gray-200'} />
           </Link>
           <div className="mt-5 px-4">
             <SearchBox />
@@ -98,8 +98,8 @@ const Navbar = () => {
         </div>
       ) : (
         <div className="flex items-center justify-between p-4">
-          <Link to="/" className="text-xl font-semibold">
-            <Heading label="AniGalaxy" />
+           <Link to="/" className="text-xl font-semibold ml-4">
+            <Heading label="AniGalaxy"  />
           </Link>
           <nav className="pt-5">
             <ul className="flex space-x-8 text-lg text-slate-300 gap-8 items-center">

@@ -147,7 +147,7 @@ export const Profile = () => {
             {userData && (
                 <div className="text-center w-full max-w-2xl px-4">
                     {editMode ? (
-                        <form onSubmit={handleEditProfile} className="space-y-4 w-full">
+                        <form onSubmit={handleEditProfile} className="space-y-4 ">
                             <div>
                                 <label className="block text-white">First Name:</label>
                                 <input
@@ -155,7 +155,7 @@ export const Profile = () => {
                                     name="firstName"
                                     value={formData.firstName || ""}
                                     onChange={handleInputChange}
-                                    className="p-2 rounded bg-gray-200 text-black w-full"
+                                    className="p-2 rounded bg-gray-200 text-black w-[300px] text-center"
                                     disabled={isUpdating}
                                 />
                             </div>
@@ -166,26 +166,26 @@ export const Profile = () => {
                                     name="lastName"
                                     value={formData.lastName || ""}
                                     onChange={handleInputChange}
-                                    className="p-2 rounded bg-gray-200 text-black w-full"
+                                    className="p-2 rounded bg-gray-200 text-black w-[300px] text-center"
                                     disabled={isUpdating}
                                 />
                             </div>
-                            <div>
+                            <div className="">
                                 <label className="block text-white">Email:</label>
                                 <input
                                     type="email"
                                     name="username"
                                     value={formData.username || ""}
                                     onChange={handleInputChange}
-                                    className="p-2 rounded bg-gray-200 text-black w-full"
+                                    className="p-2 rounded bg-gray-200 text-black w-[300px] text-center"
                                     disabled={isUpdating}
                                 />
                             </div>
 
-                            <div className="flex gap-4 mt-4">
+                            <div className="flex gap-4 mt-4 justify-center pt-8">
                                 <button 
                                     type="submit" 
-                                    className="bg-green-500 text-white px-4 py-2 rounded w-full flex items-center justify-center"
+                                    className="bg-lime-300 text-black px-4 py-2 rounded w-[143px] flex items-center justify-center"
                                     disabled={isUpdating}
                                 >
                                     {isUpdating ? 'Updating......' : 'Save Changes'}
@@ -193,7 +193,7 @@ export const Profile = () => {
                                 <button
                                     type="button"
                                     onClick={() => setEditMode(false)}
-                                    className="bg-red-500 text-white px-4 py-2 rounded w-full"
+                                    className="bg-pink-100 text-black px-4 py-2 rounded w-[143px]"
                                     disabled={isUpdating}
                                 >
                                     Cancel
@@ -201,25 +201,28 @@ export const Profile = () => {
                             </div>
                         </form>
                     ) : (
-                        <>
-                            <h1 className="text-2xl font-bold text-white">Welcome, {userData.firstName}</h1>
-                            <p className="text-gray-400">Email: {userData.username}</p>
+                        <><div className="flex flex-col text-center">
+                        <h1 className="text-2xl font-bold text-white mt-[-80px] md:mt-[-10px]">Welcome, {userData.firstName}</h1>
+                        
+                        <p className="text-gray-400">First Name: {userData.firstName}</p>
+                        <p className="text-gray-400">Last Name: {userData.lastName}</p>
+                        <p className="text-gray-400">Email: {userData.username}</p></div>
                            
-                            <div className="flex gap-4 mt-4">
+                            <div className="flex gap-4 mt-4 justify-center">
                                 <button
                                     onClick={() => setEditMode(true)}
-                                    className="bg-blue-500 text-white px-4 py-2 rounded w-full"
+                                    className="bg-lime-200 text-black px-4 py-2 rounded w-[200px]"
                                 >
                                     Edit Profile
                                 </button>
                                 <button
                                     onClick={handleLogout}
-                                    className="bg-pink-500 text-white px-4 py-2 rounded w-full"
+                                    className="bg-pink-100 text-black px-4 py-2 rounded w-[200px]"
                                 >
                                     Logout
                                 </button>
                             </div>
-                            <div className="my-4">
+                            <div className="mt-8">
                                 <h2 className="text-lg font-semibold text-white">Favourite Anime:</h2>
                                 <div className="relative">
                                     {showScrollButtons && (
@@ -240,7 +243,7 @@ export const Profile = () => {
                                     )}
                                     <ul
                                         ref={scrollContainerRef}
-                                        className="flex overflow-x-auto mt-4 scrollbar-hide no-scrollbar px-8 gap-4"
+                                        className="flex overflow-x-auto mt-4 scrollbar-hide no-scrollbar  gap-4"
                                     >
                                         {favouriteAnimes.map((anime) => ( 
                                             <li key={anime.id}>

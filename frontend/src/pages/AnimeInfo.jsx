@@ -148,39 +148,39 @@ export const AnimeInfo = () => {
                 </div>
                 <div className="flex flex-wrap space-x-1 pt-4">
                   {stats.rating && (
-                    <div className="py-[10px] bg-white text-black font-medium text-xs sm:text-sm px-4 sm:py-2 rounded shadow-md cursor-pointer transition duration-200 ease-in-out">
+                    <div className="py-[10px] bg-white text-black font-medium text-xs sm:text-sm px-4 sm:py-2 rounded shadow-md cursor-pointer transition duration-200 ease-in-out bg-opacity-85">
                       {stats.rating}
                     </div>
                   )}
                   {stats.quality && (
-                    <div className="py-[10px] bg-amber-200 text-black font-medium text-xs sm:text-sm px-4 sm:py-2 rounded shadow-md cursor-pointer transition duration-200 ease-in-out">
+                    <div className="py-[10px] bg-amber-200 text-black font-medium text-xs sm:text-sm px-4 sm:py-2 rounded shadow-md cursor-pointer transition duration-200 ease-in-out bg-opacity-85">
                       {stats.quality}
                     </div>
                   )}
                   {!isMovie && stats.episodes?.sub && (
-                    <div className="py-[10px] bg-lime-300 text-black font-medium text-xs sm:text-sm px-3 sm:py-2 rounded shadow-md cursor-pointer transition duration-200 ease-in-out">
+                    <div className="py-[10px] bg-lime-300 text-black font-medium text-xs sm:text-sm px-3 sm:py-2 rounded shadow-md cursor-pointer transition duration-200 ease-in-out bg-opacity-85">
                       {stats.episodes.sub}
                     </div>
                   )}
                   {!isMovie && stats.episodes?.dub && (
-                    <div className="py-[10px] bg-blue-100 text-black font-medium text-xs sm:text-sm px-3 sm:py-2 rounded shadow-md cursor-pointer transition duration-200 ease-in-out">
+                    <div className="py-[10px] bg-blue-100 text-black font-medium text-xs sm:text-sm px-3 sm:py-2 rounded shadow-md cursor-pointer transition duration-200 ease-in-out bg-opacity-85">
                       {stats.episodes.dub}
                     </div>
                   )}
                   {moreInfo?.duration && (
-                    <div className="py-[10px] text-white font-medium text-xs sm:text-sm px-4 py-2 rounded cursor-pointer transition duration-200 ease-in-out">
+                    <div className="py-[10px] text-white font-medium text-xs sm:text-sm px-4 py-2 rounded cursor-pointer transition duration-200 ease-in-out bg-opacity-85">
                       {moreInfo.duration === "?m" ? "" : moreInfo.duration}
                     </div>
                   )}
                 </div>
                 <div className="flex flex-wrap space-x-4 pt-4">
                   <Link to={`/watch/${animeData.id}`}>
-                    <button className="py-[12px] bg-pink-100 text-black font-medium text-xs sm:text-sm px-4 sm:py-4 rounded-2xl shadow-md cursor-pointer transition duration-200 ease-in-out">
+                    <button className="py-[12px] bg-pink-100 text-black font-medium text-xs sm:text-sm px-4 sm:py-4 rounded-2xl shadow-md cursor-pointer transition duration-200 ease-in-out bg-opacity-90">
                       Watch Now
                     </button>
                   </Link>
                   <button
-                    className={`py-[12px] ${isFavourite ? "bg-green-200" : "bg-white"} text-black font-medium text-xs sm:text-sm px-4 sm:py-4 rounded-2xl shadow-md cursor-pointer transition duration-200 ease-in-out`}
+                    className={`py-[12px] ${isFavourite ? "bg-green-200" : "bg-white"} text-black font-medium text-xs sm:text-sm px-4 sm:py-4 rounded-2xl shadow-md cursor-pointer transition duration-200 ease-in-out bg-opacity-90`}
                     onClick={toggleFav}
                     disabled={loadingFav} // Disable the button while loading
                   >
@@ -233,7 +233,7 @@ export const AnimeInfo = () => {
           <div>
             <RelatedAnime data={relatedAnime} />
           </div>
-          <div>
+          <div className="pb-12">
             <RecommendedAnime data={recommendedAnime} />
           </div>
         </>

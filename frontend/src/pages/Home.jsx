@@ -39,7 +39,7 @@ export const Home = () => {
     return (
         <>
         
-        <div className="bg-black md:pt-0 pt-[55px]">
+        <div className="bg-black md:pt-0 pt-[55px] pb-12">
             {loading ? (
                 <Loader /> // Show spinner while loading
             ) : (<>

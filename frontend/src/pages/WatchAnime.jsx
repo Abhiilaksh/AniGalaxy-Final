@@ -149,12 +149,12 @@ export const Watch = () => {
 
   return (
     <div className="min-h-screen bg-black">
-      <h1 className="pt-24 text-center text-xl md:text-3xl font-bold text-white px-16 md:ml-32">
-        {state.title}
-      </h1>
 
       <div className="flex flex-col lg:flex-row lg:space-x-4 py-12 md:px-4">
         <div className="w-full lg:w-[80%] min-h-[300px]">
+        <h1 className="pt-12 pb-8 text-center text-xl md:text-3xl font-bold text-white px-16 md:ml-32">
+        {state.title}
+      </h1>
           {state.videoLoading ? (
             <div className="flex items-center justify-center h-full">
               <Loader />
@@ -170,8 +170,8 @@ export const Watch = () => {
           )}
         </div>
 
-        <div className="w-full lg:w-auto">
-          <div className="pb-4 md:pb-4 sm:ml-0 gap-4 mt-[-50px] flex justify-evenly">
+        <div className="w-full lg:w-auto pt-16 sm:pt-24">
+          <div className="pb-8 md:pb-4 sm:ml-0 gap-4 mt-[-50px] flex  justify-center">
             {state.dubAvailable && (
               <button
                 onClick={handleAudioToggle}

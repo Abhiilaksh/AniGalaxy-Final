@@ -50,7 +50,7 @@ const MostPopular = () => {
             ))}
           </div>
           {pageCount < totalPageCount && (
-            <div className="text-center mt-4 mb-8">
+            <div className="text-center mt-4 pb-8">
               <button
                 onClick={handleNextPage}
                 className="bg-pink-200 px-3 py-1 rounded text-black"

@@ -48,17 +48,17 @@ export const SearchResult = () => {
         <Loader />
       ) : (
         <>
-          <div className="pt-16 sm:pt-24 flex justify-center">
-            <Heading label={`Search results for ${query} :`} size={"2xl"} />
+          <div className="pt-12 sm:pt-24 flex justify-center">
+            <Heading label={`Search results for ${query} :`} size={"2xl"}  color={'gray-400'}/>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 pt-16 sm:pt-24 sm:pl-24">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 pt-4 sm:pt-24 sm:pl-24 min-h-screen">
             {result.map((anime) => (
               <AnimeCard key={anime.id} title={anime.name} image={anime.poster} id={anime.id} />
             ))}
             <ScrollToTop />
           </div>
           {pageCount < totalPageCount && (
-            <div className="text-center mt-4 mb-8">
+            <div className="text-center mt-4 pb-8">
               <button
                 onClick={handleNextPage}
                 className="bg-pink-200 px-3 py-1 rounded text-black"

@@ -86,7 +86,7 @@ const Signup = () => {
         onLoad={handleImageLoaded}
       />
       {imageLoaded && (
-        <div className="flex flex-col justify-center z-10 mt-8">
+        <div className="flex flex-col justify-center z-10 mt-[-70px]">
           <div className="rounded-lg bg-white bg-opacity-70 backdrop-blur-md w-80 text-center p-2 h-max px-4">
             <Heading label={"Sign up"} color={"black"} size={"2xl"} />
             <SubHeading label={"Enter your information to create an account"} />

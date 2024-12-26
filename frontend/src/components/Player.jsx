@@ -105,7 +105,7 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro, next }) => {
         const updateButtonVisibility = () => {
           const currentTime = player.current.currentTime();
 
-          // Check if the buttons exist before attempting to modify their styles
+          
           if (skipIntroButton.current) {
             if (intro && currentTime >= intro.start && currentTime < intro.end) {
               skipIntroButton.current.style.display = "block";
@@ -170,6 +170,12 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro, next }) => {
         player.current.on("fullscreenchange", handleFullscreenChange);
         player.current.on("timeupdate", updateButtonVisibility);
         document.addEventListener("keydown", handleKeyPress);
+        player.current.on('ended', () => {
+          if (next) {
+            console.log("Video ended, navigating to next episode:", next);
+            navigate(`/watch/${next}`);
+          }
+        });
 
         return () => {
           document.removeEventListener("keydown", handleKeyPress);

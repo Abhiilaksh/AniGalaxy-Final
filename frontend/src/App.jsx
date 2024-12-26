@@ -18,7 +18,7 @@ import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from "@vercel/speed-insights/react"
 import { Watch } from './pages/WatchAnime';
 import { Profile } from './pages/Profile';
-import { Footer } from './components/Footer';
+
 import { AZList } from './pages/A-Zlist';
 
 function App() {
@@ -52,8 +52,7 @@ function RoutesWrapper() {
       </Routes>
       <Analytics />
       <SpeedInsights/>
-      {/* Render Footer only if the path doesn't start with /a-z/ */}
-      {!location.pathname.startsWith('/a-z/') && <Footer />}
+      
     </>
   );
 }

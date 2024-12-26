@@ -18,32 +18,7 @@ const SlideShow = ({ animeData }) => {
           ))}
         </div>
       )}
-      prevArrow={({ handlePrev, activeIndex }) => (
-        activeIndex !== 0 && (  // Only render and enable the prev arrow if not on the first slide
-          <IconButton
-            variant="text"
-            color="white"
-            size="lg"
-            onClick={handlePrev}
-            className="!absolute top-2/4 left-4 -translate-y-2/4"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={2}
-              stroke="currentColor"
-              className="h-6 w-6"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
-              />
-            </svg>
-          </IconButton>
-        )
-      )}>
+     >
       {animeData.slice(1,10).map((anime, index) => (
         <div
           key={index}
@@ -60,12 +35,12 @@ const SlideShow = ({ animeData }) => {
 
 
           {/* Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-r from-black/[.7] to-transparent "></div>
+          <div className="absolute inset-0 bg-black/[.25] md:bg-black/[.50] to-transparent "></div>
 
           <Link to={`/anime/${anime.id}`}>
-            <div className="relative flex items-center justify-between h-full px-8 sm:px-16">
+            <div className="relative flex items-center justify-between h-full px-16 sm:pl-16">
               {/* Description Section */}
-              <div className="text-left max-w-xl px-5">
+              <div className="text-left max-w-xl px-5 text-center ">
                 <Typography
                   variant="h1"
                   color="white"
@@ -89,7 +64,7 @@ const SlideShow = ({ animeData }) => {
                     <Button
                       size=""
                       color="white"
-                      className="text-xs sm:text-base lg:text-lg xl:text-xl p-2 sm:px-4 bg-amber-200"
+                      className="text-xs sm:text-base lg:text-lg xl:text-xl p-2 sm:px-4 bg-amber-200 bg-opacity-80"
                     >
                       Watch
                     </Button>
@@ -98,7 +73,7 @@ const SlideShow = ({ animeData }) => {
                     <Button
                       size="lg"
                       color="white"
-                      className="text-xs sm:text-base lg:text-lg xl:text-xl ml-4 p-2 sm:px-4 bg-lime-300"
+                      className="text-xs sm:text-base lg:text-lg xl:text-xl ml-4 p-2 sm:px-4 bg-lime-300 bg-opacity-80"
                     >
                       Info
                     </Button>

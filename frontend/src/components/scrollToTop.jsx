@@ -24,7 +24,7 @@ const ScrollToTop = () => {
     isVisible && (
       <button
         onClick={scrollToTop}
-        className="fixed bottom-8 right-8 bg-pink-100 text-black font-black text-2xl px-5 py-3 rounded-full shadow-lg opacity-70"
+        className="fixed bottom-8 right-8 bg-black bg-opacity-50 text-white text-4xl font-extrabold px-5 py-2 rounded-full shadow-lg "
         style={{ zIndex: 999 }}
       >
         ↑

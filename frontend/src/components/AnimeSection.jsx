@@ -41,13 +41,13 @@ export const AnimeSection = ({ title, animeData }) => {
   }, []);
 
   return (
-    <div className="mt-8 relative">
-      <Heading label={title} />
+    <div className="mt-4 relative">
+      <div className="ml-4"><Heading label={title} /></div>
       {/* Left Button */}
-      <button
-        onClick={scrollLeft}
-        className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-black text-white font-extrabold rounded-full z-50 ml-8 px-4 py-2 transition-all hover:bg-gray-800 hidden md:block"
-      >
+      <button         
+  onClick={scrollLeft}         
+  className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-35 text-white text-2xl font-extrabold rounded-full z-50 ml-8 px-5 py-4 transition-all  hidden md:block text-center"       
+>
         &#8592;
       </button>
       {/* Anime List */}
@@ -68,7 +68,7 @@ export const AnimeSection = ({ title, animeData }) => {
       {/* Right Button */}
       <button
         onClick={scrollRight}
-        className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-black text-white font-extrabold rounded-full z-50 mr-8 px-4 py-2 transition-all hover:bg-gray-800 hidden md:block"
+        className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-35 text-white text-2xl font-extrabold rounded-full z-50 ml-8 px-5 py-4 transition-all  hidden md:block text-center"
       >
         &#8594;
       </button>

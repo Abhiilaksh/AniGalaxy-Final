@@ -16,16 +16,18 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro, next }) => {
       const initializePlayer = () => {
         const createButton = (text, onClickHandler, additionalClasses) => {
           const button = document.createElement("button");
-          button.className = `absolute z-50 px-8 py-4 rounded-md hover:bg-opacity-100 ${additionalClasses}`;
+          button.className = `absolute z-50 px-5 py-3 rounded-md hover:bg-opacity-100 ${additionalClasses}`;
           button.innerHTML = text;
           button.onclick = onClickHandler;
           button.style.display = "none";
           button.style.position = "absolute";
-          button.style.backgroundColor = "rgba(255, 250, 250, 0.88)";
-          button.style.color = "black";
+          button.style.backgroundColor = "rgba(0, 0, 0, 0.35)";
+          button.style.color = "white";
           button.style.border = "none";
           button.style.cursor = "pointer";
           button.style.zIndex = "1000";
+          button.style.fontSize = "16px";
+          button.style.fontWeight = "500";
           return button;
         };
 
@@ -72,15 +74,17 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro, next }) => {
           if (next) {
             nextEpisodeButton.current = document.createElement("button");
             nextEpisodeButton.current.className =
-              "absolute z-50 px-8 py-4 rounded-md hover:bg-opacity-100 bottom-14 right-12";
+              "absolute z-50 px-5 py-3 rounded-md hover:bg-opacity-100 bottom-14 right-12 bg-opacity-70 ";
             nextEpisodeButton.current.innerHTML = "Next Episode";
             nextEpisodeButton.current.style.display = "none";
             nextEpisodeButton.current.style.position = "absolute";
-            nextEpisodeButton.current.style.backgroundColor = "rgba(255, 250, 250, 0.88)";
-            nextEpisodeButton.current.style.color = "black";
+            nextEpisodeButton.current.style.backgroundColor = "rgba(0, 0, 0, 0.35)";
+            nextEpisodeButton.current.style.color = "white";
             nextEpisodeButton.current.style.border = "none";
             nextEpisodeButton.current.style.cursor = "pointer";
             nextEpisodeButton.current.style.zIndex = "1000";
+            nextEpisodeButton.current.style.fontSize = "16px";
+            nextEpisodeButton.current.style.fontWeight = "500"
 
             // Log next episode ID and navigate to the next episode
             nextEpisodeButton.current.onclick = () => {

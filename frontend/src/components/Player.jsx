@@ -68,28 +68,31 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro, next }) => {
             "bottom-14 right-12"
           );
 
-          // Directly create the "Next Episode" button
-          nextEpisodeButton.current = document.createElement("button");
-          nextEpisodeButton.current.className =
-            "absolute z-50 px-8 py-4 rounded-md hover:bg-opacity-100 bottom-14 right-28";
-          nextEpisodeButton.current.innerHTML = "Next Episode";
-          nextEpisodeButton.current.style.display = "none";
-          nextEpisodeButton.current.style.position = "absolute";
-          nextEpisodeButton.current.style.backgroundColor = "rgba(255, 250, 250, 0.88)";
-          nextEpisodeButton.current.style.color = "black";
-          nextEpisodeButton.current.style.border = "none";
-          nextEpisodeButton.current.style.cursor = "pointer";
-          nextEpisodeButton.current.style.zIndex = "1000";
+          // Only create the "Next Episode" button if `next` is not null
+          if (next) {
+            nextEpisodeButton.current = document.createElement("button");
+            nextEpisodeButton.current.className =
+              "absolute z-50 px-8 py-4 rounded-md hover:bg-opacity-100 bottom-14 right-28";
+            nextEpisodeButton.current.innerHTML = "Next Episode";
+            nextEpisodeButton.current.style.display = "none";
+            nextEpisodeButton.current.style.position = "absolute";
+            nextEpisodeButton.current.style.backgroundColor = "rgba(255, 250, 250, 0.88)";
+            nextEpisodeButton.current.style.color = "black";
+            nextEpisodeButton.current.style.border = "none";
+            nextEpisodeButton.current.style.cursor = "pointer";
+            nextEpisodeButton.current.style.zIndex = "1000";
 
-          nextEpisodeButton.current.onclick = () => {
-            console.log("Navigating to next episode:", next);
-            if (next) {
-              navigate(`/watch/${next}`); // Navigate to the next episode
-            }
-          };
+            nextEpisodeButton.current.onclick = () => {
+              console.log("Navigating to next episode:", next);
+              if (next) {
+                navigate(`/watch/${next}`); // Navigate to the next episode
+              }
+            };
+
+            container.appendChild(nextEpisodeButton.current);
+          }
 
           container.appendChild(skipIntroButton.current);
-          container.appendChild(nextEpisodeButton.current);
         };
 
         createAndAppendButtons();
@@ -103,7 +106,7 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro, next }) => {
             skipIntroButton.current.style.display = "none";
           }
 
-          if (outro && currentTime >= outro.start) {
+          if (outro && currentTime >= outro.start && nextEpisodeButton.current) {
             nextEpisodeButton.current.style.display = "block";
           } else {
             nextEpisodeButton.current.style.display = "none";

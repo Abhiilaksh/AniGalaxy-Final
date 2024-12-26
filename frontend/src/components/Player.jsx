@@ -1,13 +1,15 @@
 import React, { useEffect, useRef } from "react";
 import videojs from "video.js";
+import { useNavigate } from "react-router-dom";
 import "video.js/dist/video-js.css";
 import "videojs-contrib-quality-levels";
 
-const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro }) => {
+const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro, next }) => {
   const videoNode = useRef(null);
   const player = useRef(null);
   const skipIntroButton = useRef(null);
-  const skipOutroButton = useRef(null);
+  const nextEpisodeButton = useRef(null);
+  const navigate = useNavigate(); // Use the navigate function
 
   useEffect(() => {
     if (videoNode.current) {
@@ -66,18 +68,28 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro }) => {
             "bottom-14 right-12"
           );
 
-          skipOutroButton.current = createButton(
-            "Skip Outro",
-            () => {
-              if (outro && player.current) {
-                player.current.currentTime(outro.end);
-              }
-            },
-            "bottom-14 right-28"
-          );
+          // Directly create the "Next Episode" button
+          nextEpisodeButton.current = document.createElement("button");
+          nextEpisodeButton.current.className =
+            "absolute z-50 px-8 py-4 rounded-md hover:bg-opacity-100 bottom-14 right-28";
+          nextEpisodeButton.current.innerHTML = "Next Episode";
+          nextEpisodeButton.current.style.display = "none";
+          nextEpisodeButton.current.style.position = "absolute";
+          nextEpisodeButton.current.style.backgroundColor = "rgba(255, 250, 250, 0.88)";
+          nextEpisodeButton.current.style.color = "black";
+          nextEpisodeButton.current.style.border = "none";
+          nextEpisodeButton.current.style.cursor = "pointer";
+          nextEpisodeButton.current.style.zIndex = "1000";
+
+          nextEpisodeButton.current.onclick = () => {
+            console.log("Navigating to next episode:", next);
+            if (next) {
+              navigate(`/watch/${next}`); // Navigate to the next episode
+            }
+          };
 
           container.appendChild(skipIntroButton.current);
-          container.appendChild(skipOutroButton.current);
+          container.appendChild(nextEpisodeButton.current);
         };
 
         createAndAppendButtons();
@@ -91,23 +103,21 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro }) => {
             skipIntroButton.current.style.display = "none";
           }
 
-          if (outro && currentTime >= outro.start && currentTime < outro.end) {
-            skipOutroButton.current.style.display = "block";
+          if (outro && currentTime >= outro.start) {
+            nextEpisodeButton.current.style.display = "block";
           } else {
-            skipOutroButton.current.style.display = "none";
+            nextEpisodeButton.current.style.display = "none";
           }
         };
 
         const handleFullscreenChange = () => {
           if (player.current.isFullscreen()) {
-            // Lock to landscape on mobile
             if (screen.orientation && screen.orientation.lock) {
               screen.orientation.lock("landscape").catch((error) => {
                 console.warn("Failed to lock orientation:", error);
               });
             }
           } else {
-            // Unlock orientation
             if (screen.orientation && screen.orientation.unlock) {
               screen.orientation.unlock();
             }
@@ -116,21 +126,16 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro }) => {
         };
 
         const handleKeyPress = (e) => {
-          if (!player.current || document.activeElement.tagName === "INPUT")
-            return;
+          if (!player.current || document.activeElement.tagName === "INPUT") return;
 
           switch (e.code) {
             case "Space":
               e.preventDefault();
-              player.current.paused()
-                ? player.current.play()
-                : player.current.pause();
+              player.current.paused() ? player.current.play() : player.current.pause();
               break;
             case "ArrowLeft":
               e.preventDefault();
-              player.current.currentTime(
-                Math.max(0, player.current.currentTime() - 5)
-              );
+              player.current.currentTime(Math.max(0, player.current.currentTime() - 5));
               break;
             case "ArrowRight":
               e.preventDefault();
@@ -161,7 +166,7 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro }) => {
 
       initializePlayer();
     }
-  }, [videoUrl, subtitleUrl, intro, outro]);
+  }, [videoUrl, subtitleUrl, intro, outro, next, navigate]); // Add navigate as a dependency
 
   return (
     <div className="video-container relative h-[200px] md:h-[550px] md:w-[95%] md:pl-16 mt-[-10px]">

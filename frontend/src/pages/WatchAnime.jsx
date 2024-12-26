@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from "react";
 import EpisodeList from "../components/EpisodeList";
 import VideoPlayer from "../components/Player";
 import { Loader } from "../components/Spinner";
-import AnimeDiscussion from "../components/AnimeDiscussion";
+
 import ScrollToTop from "../components/scrollToTop";
 import { RWebShare } from "react-web-share";
 
@@ -25,8 +25,8 @@ export const Watch = () => {
     dubAvailable: false,
     isDub: false,
   });
-  const [intro,setIntro]=useState({})
-  const[outro,setOutro]=useState({})
+  const [intro, setIntro] = useState({});
+  const [outro, setOutro] = useState({});
 
   const fullPath = location.pathname.replace("/watch/", "") + location.search;
 
@@ -60,7 +60,7 @@ export const Watch = () => {
     try {
       const isDub = fullPath.includes("category=dub");
 
-      const [subResponse, dubResponse] = await Promise.all([ 
+      const [subResponse, dubResponse] = await Promise.all([
         fetch(
           `${animeKey}episode/sources?animeEpisodeId=${fullPath}&category=sub`
         ),
@@ -74,7 +74,7 @@ export const Watch = () => {
       const subData = await subResponse.json();
       const dubData = await dubResponse.json();
       setIntro(subData.data.intro);
-      setOutro(subData.data.outro)
+      setOutro(subData.data.outro);
 
       if (!subData.data?.sources?.length) throw new Error("No video sources available");
 
@@ -139,14 +139,17 @@ export const Watch = () => {
     navigate(`/watch/${newPath}`);
   };
 
-  const currentEpisode = state.episodes.find((ep) =>
+  const currentEpisodeIndex = state.episodes.findIndex((ep) =>
     fullPath.includes(ep.episodeId)
   );
-  const episodeNumber = currentEpisode?.episodeId.match(/\d+/)?.[0] || null;
+  const nextEpisode =
+    currentEpisodeIndex >= 0 && currentEpisodeIndex < state.episodes.length - 1
+      ? state.episodes[currentEpisodeIndex + 1]
+      : null;
 
   return (
     <div className="min-h-screen bg-black">
-      <h1 className="pt-24 text-center text-xl md:text-3xl font-bold text-white  px-16 md:ml-32">
+      <h1 className="pt-24 text-center text-xl md:text-3xl font-bold text-white px-16 md:ml-32">
         {state.title}
       </h1>
 
@@ -162,12 +165,13 @@ export const Watch = () => {
               subtitleUrl={state.subtitleUrl}
               intro={intro}
               outro={outro}
+              next={nextEpisode?.episodeId || null}
             />
           )}
         </div>
 
         <div className="w-full lg:w-auto">
-          <div className="pb-4 md:pb-4 sm:ml-0  gap-4 mt-[-50px] flex justify-evenly">
+          <div className="pb-4 md:pb-4 sm:ml-0 gap-4 mt-[-50px] flex justify-evenly">
             {state.dubAvailable && (
               <button
                 onClick={handleAudioToggle}
@@ -185,7 +189,7 @@ export const Watch = () => {
                 title: state.title,
               }}
             >
-              <button className="mt-4 px-4 py-2 bg-blue-100  text-black rounded  transition-colors ml-4">
+              <button className="mt-4 px-4 py-2 bg-blue-100 text-black rounded transition-colors ml-4">
                 Share Episode
               </button>
             </RWebShare>

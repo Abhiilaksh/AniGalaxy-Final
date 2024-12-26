@@ -115,7 +115,7 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro, next }) => {
           }
 
           if (nextEpisodeButton.current) {
-            if (outro && currentTime >= outro.start) {
+            if (outro && currentTime >= outro.start&&currentTime < outro.end) {
               nextEpisodeButton.current.style.display = "block";
             } else {
               nextEpisodeButton.current.style.display = "none";

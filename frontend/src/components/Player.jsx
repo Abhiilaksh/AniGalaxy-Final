@@ -12,8 +12,7 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro }) => {
   useEffect(() => {
     if (videoNode.current) {
       const initializePlayer = () => {
-        // Create custom buttons
-         const createButton = (text, onClickHandler, additionalClasses) => {
+        const createButton = (text, onClickHandler, additionalClasses) => {
           const button = document.createElement("button");
           button.className = `absolute z-50 px-8 py-4 rounded-md hover:bg-opacity-100 ${additionalClasses}`;
           button.innerHTML = text;
@@ -28,7 +27,6 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro }) => {
           return button;
         };
 
-        // Initialize player
         player.current = videojs(videoNode.current, {
           autoplay: true,
           controls: true,
@@ -55,7 +53,6 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro }) => {
             : [],
         });
 
-        // Create and append skip buttons
         const createAndAppendButtons = () => {
           const container = player.current.el();
 
@@ -85,7 +82,6 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro }) => {
 
         createAndAppendButtons();
 
-        // Update button visibility
         const updateButtonVisibility = () => {
           const currentTime = player.current.currentTime();
 
@@ -102,17 +98,23 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro }) => {
           }
         };
 
-        // Handle fullscreen changes
         const handleFullscreenChange = () => {
           if (player.current.isFullscreen()) {
-            skipIntroButton.current.style.display = "block";
-            skipOutroButton.current.style.display = "block";
+            // Lock to landscape on mobile
+            if (screen.orientation && screen.orientation.lock) {
+              screen.orientation.lock("landscape").catch((error) => {
+                console.warn("Failed to lock orientation:", error);
+              });
+            }
           } else {
-            updateButtonVisibility();
+            // Unlock orientation
+            if (screen.orientation && screen.orientation.unlock) {
+              screen.orientation.unlock();
+            }
           }
+          updateButtonVisibility();
         };
 
-        // Keyboard controls
         const handleKeyPress = (e) => {
           if (!player.current || document.activeElement.tagName === "INPUT")
             return;
@@ -147,12 +149,10 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro }) => {
           }
         };
 
-        // Add event listeners
         player.current.on("fullscreenchange", handleFullscreenChange);
         player.current.on("timeupdate", updateButtonVisibility);
         document.addEventListener("keydown", handleKeyPress);
 
-        // Cleanup
         return () => {
           document.removeEventListener("keydown", handleKeyPress);
           player.current.dispose();

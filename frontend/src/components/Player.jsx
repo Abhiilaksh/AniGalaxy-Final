@@ -16,12 +16,16 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro }) => {
       // Create custom buttons
       const createButton = (text, onClickHandler, additionalClasses) => {
         const button = document.createElement("button");
-        button.className = `absolute z-10 px-8 py-4 rounded-md hover:bg-opacity-100 ${additionalClasses}`;
+        button.className = `absolute z-50 px-8 py-4 rounded-md hover:bg-opacity-100 ${additionalClasses}`;
         button.innerHTML = text;
         button.onclick = onClickHandler;
         button.style.display = "none";
+        button.style.position = "absolute";
         button.style.backgroundColor = "rgba(255, 250, 250, 0.88)";
         button.style.color = "black";
+        button.style.border = "none";
+        button.style.cursor = "pointer";
+        button.style.zIndex = "1000";
         return button;
       };
 
@@ -52,7 +56,7 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro }) => {
           : [],
       });
 
-      // Create skip buttons
+      // Create and append skip buttons
       const createAndAppendButtons = () => {
         skipIntroButton.current = createButton(
           "Skip Intro",
@@ -76,39 +80,45 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro }) => {
 
         videoContainer.appendChild(skipIntroButton.current);
         videoContainer.appendChild(skipOutroButton.current);
+        console.log("Skip buttons added to DOM:", {
+          intro: skipIntroButton.current,
+          outro: skipOutroButton.current,
+        });
       };
 
       createAndAppendButtons();
 
       // Keyboard controls
       const handleKeyPress = (e) => {
-        if (!player.current || document.activeElement.tagName === 'INPUT') return;
+        if (!player.current || document.activeElement.tagName === "INPUT") return;
 
-        switch(e.code) {
-          case 'Space':
+        switch (e.code) {
+          case "Space":
             e.preventDefault();
             player.current.paused() ? player.current.play() : player.current.pause();
             break;
-          case 'ArrowLeft':
+          case "ArrowLeft":
             e.preventDefault();
             player.current.currentTime(Math.max(0, player.current.currentTime() - 5));
             break;
-          case 'ArrowRight':
+          case "ArrowRight":
             e.preventDefault();
             player.current.currentTime(player.current.currentTime() + 5);
             break;
-          case 'ArrowUp':
+          case "ArrowUp":
             e.preventDefault();
             player.current.volume(Math.min(1, player.current.volume() + 0.1));
             break;
-          case 'ArrowDown':
+          case "ArrowDown":
             e.preventDefault();
             player.current.volume(Math.max(0, player.current.volume() - 0.1));
+            break;
+          default:
             break;
         }
       };
 
-      document.addEventListener('keydown', handleKeyPress);
+      document.addEventListener("keydown", handleKeyPress);
 
       // Fullscreen event listener
       const handleFullscreenChange = () => {
@@ -126,13 +136,23 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro }) => {
       const handleTimeUpdate = () => {
         const currentTime = player.current.currentTime();
 
-        if (player.current.isFullscreen() && intro && currentTime >= intro.start && currentTime < intro.end) {
+        if (
+          player.current.isFullscreen() &&
+          intro &&
+          currentTime >= intro.start &&
+          currentTime < intro.end
+        ) {
           skipIntroButton.current.style.display = "block";
         } else {
           skipIntroButton.current.style.display = "none";
         }
 
-        if (player.current.isFullscreen() && outro && currentTime >= outro.start && currentTime < outro.end) {
+        if (
+          player.current.isFullscreen() &&
+          outro &&
+          currentTime >= outro.start &&
+          currentTime < outro.end
+        ) {
           skipOutroButton.current.style.display = "block";
         } else {
           skipOutroButton.current.style.display = "none";
@@ -140,9 +160,6 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro }) => {
       };
 
       player.current.on("timeupdate", handleTimeUpdate);
-
-      // Cleanup
-      
     }
   }, [videoUrl, subtitleUrl, intro, outro]);
 

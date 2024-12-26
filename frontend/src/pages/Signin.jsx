@@ -31,7 +31,7 @@ export const Signin = () => {
 
         try {
             // Replace this with your actual API call
-            const response = await fetch("https://anigalaxy-final-1.onrender.com/api/v1/user/signin", {
+            const response = await fetch("https://api.anigalaxy.xyz/api/v1/user/signin", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ username: email, password }), // change email to username

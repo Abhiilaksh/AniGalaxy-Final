@@ -52,7 +52,7 @@ const Signup = () => {
     setLoading(true); // Start loading
     try {
       const response = await axios.post(
-        "https://anigalaxy-final-1.onrender.com/api/v1/user/signup",
+        "https://api.anigalaxy.xyz/api/v1/user/signup",
         {
           username,
           firstName,

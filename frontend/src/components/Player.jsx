@@ -11,143 +11,153 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro }) => {
 
   useEffect(() => {
     if (videoNode.current) {
-      const videoContainer = videoNode.current.parentNode;
+      const initializePlayer = () => {
+        // Create custom buttons
+        const createButton = (text, onClickHandler, additionalClasses) => {
+          const button = document.createElement("button");
+          button.className = `
+            absolute z-50 px-4 py-2 text-sm font-medium 
+            bg-white bg-opacity-80 hover:bg-opacity-100 
+            text-black rounded-md shadow-md ${additionalClasses}
+          `;
+          button.innerHTML = text;
+          button.onclick = onClickHandler;
+          button.style.display = "none"; // Initially hidden
+          return button;
+        };
 
-      // Create custom buttons
-      const createButton = (text, onClickHandler, additionalClasses) => {
-        const button = document.createElement("button");
-        button.className = `
-          absolute z-50 px-4 py-2 text-sm font-medium 
-          bg-white bg-opacity-80 hover:bg-opacity-100 
-          text-black rounded-md shadow-md ${additionalClasses}
-        `;
-        button.innerHTML = text;
-        button.onclick = onClickHandler;
-        button.style.display = "none"; // Tailwind does not handle dynamic display property
-        return button;
-      };
+        // Initialize player
+        player.current = videojs(videoNode.current, {
+          autoplay: true,
+          controls: true,
+          responsive: true,
+          fluid: false,
+          preload: "auto",
+          playbackRates: [0.5, 1, 1.5, 2],
+          sources: [
+            {
+              src: videoUrl,
+              type: "application/x-mpegURL",
+            },
+          ],
+          tracks: subtitleUrl
+            ? [
+                {
+                  kind: "captions",
+                  label: "English",
+                  src: subtitleUrl,
+                  srclang: "en",
+                  default: true,
+                },
+              ]
+            : [],
+        });
 
-      // Initialize player
-      player.current = videojs(videoNode.current, {
-        autoplay: true,
-        controls: true,
-        responsive: true,
-        fluid: false,
-        preload: "auto",
-        playbackRates: [0.5, 1, 1.5, 2],
-        sources: [
-          {
-            src: videoUrl,
-            type: "application/x-mpegURL",
-          },
-        ],
-        tracks: subtitleUrl
-          ? [
-              {
-                kind: "captions",
-                label: "English",
-                src: subtitleUrl,
-                srclang: "en",
-                default: true,
-              },
-            ]
-          : [],
-      });
+        // Create and append skip buttons
+        const createAndAppendButtons = () => {
+          const container = player.current.el();
 
-      // Create and append skip buttons
-      const createAndAppendButtons = () => {
-        skipIntroButton.current = createButton(
-          "Skip Intro",
-          () => {
-            if (intro && player.current) {
-              player.current.currentTime(intro.end);
-            }
-          },
-          "bottom-14 right-12"
-        );
+          skipIntroButton.current = createButton(
+            "Skip Intro",
+            () => {
+              if (intro && player.current) {
+                player.current.currentTime(intro.end);
+              }
+            },
+            "bottom-14 right-12"
+          );
 
-        skipOutroButton.current = createButton(
-          "Skip Outro",
-          () => {
-            if (outro && player.current) {
-              player.current.currentTime(outro.end);
-            }
-          },
-          "bottom-14 right-12"
-        );
+          skipOutroButton.current = createButton(
+            "Skip Outro",
+            () => {
+              if (outro && player.current) {
+                player.current.currentTime(outro.end);
+              }
+            },
+            "bottom-14 right-28"
+          );
 
-        videoContainer.appendChild(skipIntroButton.current);
-        videoContainer.appendChild(skipOutroButton.current);
-      };
+          container.appendChild(skipIntroButton.current);
+          container.appendChild(skipOutroButton.current);
+        };
 
-      createAndAppendButtons();
+        createAndAppendButtons();
 
-      // Ensure buttons show on fullscreen
-      const handleFullscreenChange = () => {
-        if (player.current.isFullscreen()) {
-          if (screen.orientation && screen.orientation.lock) {
-            screen.orientation
-              .lock("landscape")
-              .catch((err) => console.warn("Orientation lock failed:", err));
+        // Update button visibility
+        const updateButtonVisibility = () => {
+          const currentTime = player.current.currentTime();
+
+          if (intro && currentTime >= intro.start && currentTime < intro.end) {
+            skipIntroButton.current.style.display = "block";
+          } else {
+            skipIntroButton.current.style.display = "none";
           }
 
-          // Update button visibility on fullscreen toggle
-          updateButtonVisibility();
-        }
+          if (outro && currentTime >= outro.start && currentTime < outro.end) {
+            skipOutroButton.current.style.display = "block";
+          } else {
+            skipOutroButton.current.style.display = "none";
+          }
+        };
+
+        // Handle fullscreen changes
+        const handleFullscreenChange = () => {
+          if (player.current.isFullscreen()) {
+            skipIntroButton.current.style.display = "block";
+            skipOutroButton.current.style.display = "block";
+          } else {
+            updateButtonVisibility();
+          }
+        };
+
+        // Keyboard controls
+        const handleKeyPress = (e) => {
+          if (!player.current || document.activeElement.tagName === "INPUT")
+            return;
+
+          switch (e.code) {
+            case "Space":
+              e.preventDefault();
+              player.current.paused()
+                ? player.current.play()
+                : player.current.pause();
+              break;
+            case "ArrowLeft":
+              e.preventDefault();
+              player.current.currentTime(
+                Math.max(0, player.current.currentTime() - 5)
+              );
+              break;
+            case "ArrowRight":
+              e.preventDefault();
+              player.current.currentTime(player.current.currentTime() + 5);
+              break;
+            case "ArrowUp":
+              e.preventDefault();
+              player.current.volume(Math.min(1, player.current.volume() + 0.1));
+              break;
+            case "ArrowDown":
+              e.preventDefault();
+              player.current.volume(Math.max(0, player.current.volume() - 0.1));
+              break;
+            default:
+              break;
+          }
+        };
+
+        // Add event listeners
+        player.current.on("fullscreenchange", handleFullscreenChange);
+        player.current.on("timeupdate", updateButtonVisibility);
+        document.addEventListener("keydown", handleKeyPress);
+
+        // Cleanup
+        return () => {
+          document.removeEventListener("keydown", handleKeyPress);
+          player.current.dispose();
+        };
       };
 
-      // Handle time updates for button visibility
-      const updateButtonVisibility = () => {
-        const currentTime = player.current.currentTime();
-
-        if (intro && currentTime >= intro.start && currentTime < intro.end) {
-          skipIntroButton.current.style.display = "block";
-        } else {
-          skipIntroButton.current.style.display = "none";
-        }
-
-        if (outro && currentTime >= outro.start && currentTime < outro.end) {
-          skipOutroButton.current.style.display = "block";
-        } else {
-          skipOutroButton.current.style.display = "none";
-        }
-      };
-
-      // Event listeners
-      player.current.on("fullscreenchange", handleFullscreenChange);
-      player.current.on("timeupdate", updateButtonVisibility);
-
-      // Keyboard controls
-      const handleKeyPress = (e) => {
-        if (!player.current || document.activeElement.tagName === "INPUT") return;
-
-        switch (e.code) {
-          case "Space":
-            e.preventDefault();
-            player.current.paused() ? player.current.play() : player.current.pause();
-            break;
-          case "ArrowLeft":
-            e.preventDefault();
-            player.current.currentTime(Math.max(0, player.current.currentTime() - 5));
-            break;
-          case "ArrowRight":
-            e.preventDefault();
-            player.current.currentTime(player.current.currentTime() + 5);
-            break;
-          case "ArrowUp":
-            e.preventDefault();
-            player.current.volume(Math.min(1, player.current.volume() + 0.1));
-            break;
-          case "ArrowDown":
-            e.preventDefault();
-            player.current.volume(Math.max(0, player.current.volume() - 0.1));
-            break;
-          default:
-            break;
-        }
-      };
-
-      document.addEventListener("keydown", handleKeyPress);
+      initializePlayer();
     }
   }, [videoUrl, subtitleUrl, intro, outro]);
 

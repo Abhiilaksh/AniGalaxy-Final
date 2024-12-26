@@ -80,10 +80,6 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro }) => {
 
         videoContainer.appendChild(skipIntroButton.current);
         videoContainer.appendChild(skipOutroButton.current);
-        console.log("Skip buttons added to DOM:", {
-          intro: skipIntroButton.current,
-          outro: skipOutroButton.current,
-        });
       };
 
       createAndAppendButtons();
@@ -120,7 +116,7 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro }) => {
 
       document.addEventListener("keydown", handleKeyPress);
 
-      // Fullscreen event listener
+      // Handle fullscreen and switch to landscape
       const handleFullscreenChange = () => {
         if (player.current.isFullscreen()) {
           if (screen.orientation && screen.orientation.lock) {
@@ -136,23 +132,15 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro }) => {
       const handleTimeUpdate = () => {
         const currentTime = player.current.currentTime();
 
-        if (
-          player.current.isFullscreen() &&
-          intro &&
-          currentTime >= intro.start &&
-          currentTime < intro.end
-        ) {
+        // Show skip intro button during the intro section
+        if (intro && currentTime >= intro.start && currentTime < intro.end) {
           skipIntroButton.current.style.display = "block";
         } else {
           skipIntroButton.current.style.display = "none";
         }
 
-        if (
-          player.current.isFullscreen() &&
-          outro &&
-          currentTime >= outro.start &&
-          currentTime < outro.end
-        ) {
+        // Show skip outro button during the outro section
+        if (outro && currentTime >= outro.start && currentTime < outro.end) {
           skipOutroButton.current.style.display = "block";
         } else {
           skipOutroButton.current.style.display = "none";

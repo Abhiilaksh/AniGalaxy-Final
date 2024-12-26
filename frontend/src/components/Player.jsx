@@ -13,16 +13,18 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro }) => {
     if (videoNode.current) {
       const initializePlayer = () => {
         // Create custom buttons
-        const createButton = (text, onClickHandler, additionalClasses) => {
+         const createButton = (text, onClickHandler, additionalClasses) => {
           const button = document.createElement("button");
-          button.className = `
-            absolute z-50 px-4 py-2 text-sm font-medium 
-            bg-white bg-opacity-80 hover:bg-opacity-100 
-            text-black rounded-md shadow-md ${additionalClasses}
-          `;
+          button.className = `absolute z-50 px-8 py-4 rounded-md hover:bg-opacity-100 ${additionalClasses}`;
           button.innerHTML = text;
           button.onclick = onClickHandler;
-          button.style.display = "none"; // Initially hidden
+          button.style.display = "none";
+          button.style.position = "absolute";
+          button.style.backgroundColor = "rgba(255, 250, 250, 0.88)";
+          button.style.color = "black";
+          button.style.border = "none";
+          button.style.cursor = "pointer";
+          button.style.zIndex = "1000";
           return button;
         };
 

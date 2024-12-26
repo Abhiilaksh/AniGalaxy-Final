@@ -82,8 +82,9 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro, next }) => {
             nextEpisodeButton.current.style.cursor = "pointer";
             nextEpisodeButton.current.style.zIndex = "1000";
 
+            // Log next episode ID and navigate to the next episode
             nextEpisodeButton.current.onclick = () => {
-              console.log("Navigating to next episode:", next);
+              console.log("Navigating to next episode:", next);  // Log the next episode ID
               if (next) {
                 navigate(`/watch/${next}`); // Navigate to the next episode
               }
@@ -100,16 +101,21 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro, next }) => {
         const updateButtonVisibility = () => {
           const currentTime = player.current.currentTime();
 
-          if (intro && currentTime >= intro.start && currentTime < intro.end) {
-            skipIntroButton.current.style.display = "block";
-          } else {
-            skipIntroButton.current.style.display = "none";
+          // Check if the buttons exist before attempting to modify their styles
+          if (skipIntroButton.current) {
+            if (intro && currentTime >= intro.start && currentTime < intro.end) {
+              skipIntroButton.current.style.display = "block";
+            } else {
+              skipIntroButton.current.style.display = "none";
+            }
           }
 
-          if (outro && currentTime >= outro.start && nextEpisodeButton.current) {
-            nextEpisodeButton.current.style.display = "block";
-          } else {
-            nextEpisodeButton.current.style.display = "none";
+          if (nextEpisodeButton.current) {
+            if (outro && currentTime >= outro.start) {
+              nextEpisodeButton.current.style.display = "block";
+            } else {
+              nextEpisodeButton.current.style.display = "none";
+            }
           }
         };
 

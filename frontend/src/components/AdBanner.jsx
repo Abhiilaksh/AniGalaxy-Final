@@ -22,11 +22,8 @@ const AdBanner = () => {
     invokeScript.src = "//www.highperformanceformat.com/88b254cebc36f719ac01e2cfa268d293/invoke.js";
     document.body.appendChild(invokeScript);
 
-    // Clean up the scripts on component unmount
-    return () => {
-      document.body.removeChild(atOptionsScript);
-      document.body.removeChild(invokeScript);
-    };
+   
+    
   }, []);
 
   return (

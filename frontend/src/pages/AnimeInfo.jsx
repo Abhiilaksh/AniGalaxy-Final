@@ -8,7 +8,7 @@ import { RecommendedAnime } from "../components/RecommendedAnime";
 import { Loader } from "../components/Spinner";
 import { AnimeDiscussion } from "../components/AnimeDiscussion";
 import ScrollToTop from "../components/scrollToTop";
-import AdBanner from "../components/AdBanner";
+import AdBanner2 from "../components/AdBanner2";
 
 export const AnimeInfo = () => {
   const { id } = useParams();
@@ -230,7 +230,7 @@ export const AnimeInfo = () => {
           <div className="pl-8 pt-8 h-[400px] overflow-auto scrollbar-thin scrollbar-thumb-gray-800 scrollbar-track-gray-900">
             <AnimeDiscussion animeId={id} />
           </div>
-          <AdBanner />
+          <AdBanner2 />
           <ScrollToTop />
           <div>
             <RelatedAnime data={relatedAnime} />

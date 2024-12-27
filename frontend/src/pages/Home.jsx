@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Loader } from "../components/Spinner";
 const animeKey = import.meta.env.VITE_ANIME_KEY;
 import ScrollToTop from "../components/scrollToTop";
+import AdBanner from "../components/AdBanner";
 
 import { AnimeSection } from "../components/AnimeSection";
 
@@ -45,6 +46,7 @@ export const Home = () => {
             ) : (<>
                 <SlideShow animeData={slide} />
                 <AnimeSection title="Trending Anime" animeData={trending} />
+                <AdBanner></AdBanner>
                 <AnimeSection title="Latest Episodes" animeData={latest} />
                 <ScrollToTop></ScrollToTop>
                 </>

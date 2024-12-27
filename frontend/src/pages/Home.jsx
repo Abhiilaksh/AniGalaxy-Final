@@ -46,7 +46,7 @@ export const Home = () => {
             ) : (<>
                 <SlideShow animeData={slide} />
                 <AnimeSection title="Trending Anime" animeData={trending} />
-                <div className="pt-5"><AdBanner></AdBanner></div>
+                {/* <div className="pt-5"><AdBanner></AdBanner></div> */}
                 <AnimeSection title="Latest Episodes" animeData={latest} />
                 <ScrollToTop></ScrollToTop>
                 </>

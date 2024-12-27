@@ -230,7 +230,7 @@ export const AnimeInfo = () => {
           <div className="pl-8 pt-8 h-[400px] overflow-auto scrollbar-thin scrollbar-thumb-gray-800 scrollbar-track-gray-900">
             <AnimeDiscussion animeId={id} />
           </div>
-          <AdBanner/>
+          {/* <AdBanner/> */}
           <ScrollToTop />
           <div>
             <RelatedAnime data={relatedAnime} />

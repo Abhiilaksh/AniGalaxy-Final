@@ -1,93 +1,99 @@
-import { Carousel, Typography, Button, IconButton } from "@material-tailwind/react";
-import { Link } from "react-router-dom";
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { Carousel, Typography, Button } from '@material-tailwind/react';
+import { Play, Info } from 'lucide-react';
 
-const SlideShow = ({ animeData }) => {
+const SlideShow = ({ animeData = [] }) => {
+  const slides = animeData.slice(1, 10);
+
   return (
-    <div className="">
-    <Carousel loop autoplay className="rounded-sm"
-    navigation={({ setActiveIndex, activeIndex, length }) => (
-        <div className="absolute bottom-4 left-2/4  flex -translate-x-2/4 gap-2">
-          {new Array(length).fill("").map((_, i) => (
-            <span
-              key={i}
-              className={`block h-1 cursor-pointer rounded-2xl transition-all content-[''] ${
-                activeIndex === i ? "w-8 bg-white" : "w-4 bg-white/50"
-              }`}
-              onClick={() => setActiveIndex(i)}
+    <div className="relative w-full">
+      <Carousel
+        loop
+        autoplay
+        className="rounded-xl overflow-hidden"
+        navigation={({ setActiveIndex, activeIndex, length }) => (
+          <div className="absolute bottom-8 left-2/4 z-50 flex -translate-x-2/4 gap-3">
+            {Array.from({ length }).map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setActiveIndex(i)}
+                aria-label={`Go to slide ${i + 1}`}
+                className={`
+                  h-2 rounded-full transition-all duration-300
+                  ${activeIndex === i ? "w-8 bg-white" : "w-4 bg-white/50"}
+                `}
+              />
+            ))}
+          </div>
+        )}
+      >
+        {slides.map((anime, index) => (
+          <div
+            key={index}
+            className="relative h-[300px] sm:h-[500px] lg:h-[600px] xl:h-[700px]"
+          >
+            {/* Background Image with Blur Effect */}
+            <div
+              className="absolute inset-0 bg-cover bg-center"
+              style={{
+                backgroundImage: `url(${anime.poster})`,
+                filter: 'blur(2px)',
+                
+              }}
             />
-          ))}
-        </div>
-      )}
-     >
-      {animeData.slice(1,10).map((anime, index) => (
-        <div
-          key={index}
-          className="relative h-[275px] sm:h-[500px] lg:h-[600px] xl:h-[700px] "
-        >
-        
-        <div
-  className="absolute inset-0 z-0 bg-cover bg-center filter "
-  style={{
-    backgroundImage: `url(${anime.poster})`,
-  }}
-></div>
 
+            {/* Gradient Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent" />
 
+            {/* Content Container */}
+            <div className="relative h-full flex items-center">
+              <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="max-w-2xl">
+                  {/* Title */}
+                  <h2 className="text-xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-white mb-4 line-clamp-2 text-center sm:text-left">
+                    {anime.name}
+                  </h2>
 
-          {/* Gradient Overlay */}
-          <div className="absolute inset-0 bg-black/[.25] md:bg-black/[.50] to-transparent "></div>
+                  {/* Description - Hidden on mobile */}
+                  <div className="hidden sm:block mb-8">
+                    <div 
+                      className="text-white/90 text-sm sm:text-base lg:text-lg prose line-clamp-3"
+                      dangerouslySetInnerHTML={{ 
+                        __html: anime.description 
+                      }}
+                    />
+                  </div>
 
-          <Link to={`/anime/${anime.id}`}>
-            <div className="relative flex items-center justify-center h-full px-16 sm:pl-16">
-              {/* Description Section */}
-              <div className=" max-w-xl px-5 text-center ">
-                <Typography
-                  variant="h1"
-                  color="white"
-                  className="mb-4 text-xl sm:text-3xl md:text-4xl lg:text-5xl font-bold px-4 sm:px-0"
-                >
-                  {anime.name}
-                </Typography>
-                <div className="hidden sm:block">
-                <Typography
-  variant="lead"
-  color="white"
-  className="mb-12 text-sm sm:text-md h-24 w-[500px] overflow-hidden text-ellipsis line-clamp-4  leading-relaxed"
->
-  <div
-    dangerouslySetInnerHTML={{ __html: anime.description }}
-  />
-</Typography>
-                </div>
-                <div className="hidden sm:block">
-                  <Link to={`/watch/${anime.id}`}>
-                    <Button
-                      size=""
-                      color="white"
-                      className="text-xs sm:text-base lg:text-lg xl:text-xl p-2 sm:px-4 bg-amber-200 bg-opacity-80"
-                    >
-                      Watch
-                    </Button>
-                  </Link>
-                  <Link to={`/anime/${anime.id}`}>
-                    <Button
-                      size="lg"
-                      color="white"
-                      className="text-xs sm:text-base lg:text-lg xl:text-xl ml-4 p-2 sm:px-4 bg-lime-300 bg-opacity-80"
-                    >
-                      Info
-                    </Button>
-                  </Link>
+                  {/* Action Buttons */}
+                  <div className="flex gap-4 justify-center sm:justify-start">
+                    <Link to={`/watch/${anime.id}`}>
+                      <Button
+                        size="lg"
+                        className="flex items-center gap-2 bg-pink-100 hover:bg-pink-200 transition-colors text-black font-bold"
+                      >
+                        <Play size={20} />
+                        <span className="hidden sm:inline">Watch Now</span>
+                      </Button>
+                    </Link>
+                    
+                    <Link to={`/anime/${anime.id}`}>
+                      <Button
+                        size="lg"
+                        variant="outlined"
+                        className="flex items-center gap-2 border-white text-white hover:bg-white/10 transition-colors"
+                      >
+                        <Info size={20} />
+                        <span className="hidden sm:inline">More Info</span>
+                      </Button>
+                    </Link>
+                  </div>
                 </div>
               </div>
-
-       
-
             </div>
-          </Link>
-        </div>
-      ))}
-    </Carousel>
+          </div>
+        ))}
+      </Carousel>
     </div>
   );
 };

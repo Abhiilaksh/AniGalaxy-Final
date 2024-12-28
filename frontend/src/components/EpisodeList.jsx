@@ -67,16 +67,16 @@ const EpisodeList = ({ episodes, ranges, range, handleRangeChange }) => {
           <button
             key={episode.episodeId}
             className={`mb-4 w-12 ${
-              episodes.length < 30 ? "w-full text-left" : "bg-gray-900 rounded text-center"
+              episodes.length < 30 ? "w-full text-left" : "bg-gray-900 rounded-md text-center"
             } text-white ${
-              episode.episodeId === activeEpisodeId ? "bg-pink-600" : ""
+              episode.episodeId === activeEpisodeId ? "bg-pink-600 rounded-md" : ""
             }`}
             onClick={() => handleEpisodeClick(episode.episodeId)}
           >
             {episodes.length < 30 ? (
               <div
                 className={`border-[.5px] rounded-md px-6 py-2 text-left text-lg ${
-                  episode.isFiller ? "text-pink-600 font-bold" : ""
+                  episode.isFiller ? "text-pink-600 font-bold rounded-md" : ""
                 } ${
                   episode.episodeId === activeEpisodeId ? "bg-lime-300 text-black " : ""
                 }`}

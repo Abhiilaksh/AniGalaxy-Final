@@ -76,7 +76,7 @@ export const Home = () => {
             <h3 className="text-lg font-semibold">Server Error</h3>
           </div>
           <p className="text-gray-200">
-            Unable to connect to the server. Please check your internet connection and try again later.
+            Unable to connect to the server.
           </p>
         </div>
       </div>

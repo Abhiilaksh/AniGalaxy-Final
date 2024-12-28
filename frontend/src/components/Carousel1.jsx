@@ -38,9 +38,9 @@ const SlideShow = ({ animeData }) => {
           <div className="absolute inset-0 bg-black/[.25] md:bg-black/[.50] to-transparent "></div>
 
           <Link to={`/anime/${anime.id}`}>
-            <div className="relative flex items-center justify-between h-full px-16 sm:pl-16">
+            <div className="relative flex items-center justify-center h-full px-16 sm:pl-16">
               {/* Description Section */}
-              <div className="text-left max-w-xl px-5 text-center ">
+              <div className=" max-w-xl px-5 text-center ">
                 <Typography
                   variant="h1"
                   color="white"

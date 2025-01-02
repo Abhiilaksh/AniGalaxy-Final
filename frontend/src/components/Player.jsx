@@ -9,7 +9,7 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro, next }) => {
   const player = useRef(null);
   const skipIntroButton = useRef(null);
   const nextEpisodeButton = useRef(null);
-  const navigate = useNavigate(); // Use the navigate function
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (videoNode.current) {
@@ -57,6 +57,35 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro, next }) => {
             : [],
         });
 
+        // Handle quality change events
+        player.current.on("loadedmetadata", () => {
+          const qualityLevels = player.current.qualityLevels();
+          
+          qualityLevels.on("change", () => {
+            const currentTime = player.current.currentTime();
+            
+            // Store current subtitle track
+            const tracks = player.current.textTracks();
+            const activeTrack = Array.from(tracks).find(track => 
+              track.mode === 'showing' || track.mode === 'hidden'
+            );
+            
+            if (activeTrack) {
+              // Disable and re-enable the track to force resync
+              const previousMode = activeTrack.mode;
+              activeTrack.mode = 'disabled';
+              
+              // Small timeout to ensure the track has time to properly reset
+              setTimeout(() => {
+                activeTrack.mode = previousMode;
+                
+                // Ensure we're at the correct timestamp
+                player.current.currentTime(currentTime);
+              }, 100);
+            }
+          });
+        });
+
         const createAndAppendButtons = () => {
           const container = player.current.el();
 
@@ -70,7 +99,6 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro, next }) => {
             "bottom-14 right-12"
           );
 
-          // Only create the "Next Episode" button if `next` is not null
           if (next) {
             nextEpisodeButton.current = document.createElement("button");
             nextEpisodeButton.current.className =
@@ -86,11 +114,10 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro, next }) => {
             nextEpisodeButton.current.style.fontSize = "16px";
             nextEpisodeButton.current.style.fontWeight = "500"
 
-            // Log next episode ID and navigate to the next episode
             nextEpisodeButton.current.onclick = () => {
-              console.log("Navigating to next episode:", next);  // Log the next episode ID
+              console.log("Navigating to next episode:", next);
               if (next) {
-                navigate(`/watch/${next}`); // Navigate to the next episode
+                navigate(`/watch/${next}`);
               }
             };
 
@@ -104,7 +131,6 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro, next }) => {
 
         const updateButtonVisibility = () => {
           const currentTime = player.current.currentTime();
-
           
           if (skipIntroButton.current) {
             if (intro && currentTime >= intro.start && currentTime < intro.end) {
@@ -115,7 +141,7 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro, next }) => {
           }
 
           if (nextEpisodeButton.current) {
-            if (outro && currentTime >= outro.start&&currentTime < outro.end) {
+            if (outro && currentTime >= outro.start && currentTime < outro.end) {
               nextEpisodeButton.current.style.display = "block";
             } else {
               nextEpisodeButton.current.style.display = "none";
@@ -185,7 +211,7 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro, next }) => {
 
       initializePlayer();
     }
-  }, [videoUrl, subtitleUrl, intro, outro, next, navigate]); // Add navigate as a dependency
+  }, [videoUrl, subtitleUrl, intro, outro, next, navigate]);
 
   return (
     <div className="video-container relative h-[200px] md:h-[550px] md:w-[95%] md:pl-16 mt-[-10px]">

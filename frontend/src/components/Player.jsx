@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useCallback } from "react";
 import videojs from "video.js";
 import { useNavigate } from "react-router-dom";
 import "video.js/dist/video-js.css";
@@ -11,33 +11,33 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro, next }) => {
   const nextEpisodeButton = useRef(null);
   const navigate = useNavigate();
 
+  const createButton = useCallback((text, onClickHandler, additionalClasses) => {
+    const button = document.createElement("button");
+    button.className = `absolute z-50 px-5 py-3 rounded-md hover:bg-opacity-100 ${additionalClasses}`;
+    button.innerHTML = text;
+    button.onclick = onClickHandler;
+    button.style.display = "none";
+    button.style.position = "absolute";
+    button.style.backgroundColor = "rgba(0, 0, 0, 0.35)";
+    button.style.color = "white";
+    button.style.border = "none";
+    button.style.cursor = "pointer";
+    button.style.zIndex = "1000";
+    button.style.fontSize = "16px";
+    button.style.fontWeight = "500";
+    return button;
+  }, []);
+
   useEffect(() => {
     if (videoNode.current) {
       const initializePlayer = () => {
-        const createButton = (text, onClickHandler, additionalClasses) => {
-          const button = document.createElement("button");
-          button.className = `absolute z-50 px-5 py-3 rounded-md hover:bg-opacity-100 ${additionalClasses}`;
-          button.innerHTML = text;
-          button.onclick = onClickHandler;
-          button.style.display = "none";
-          button.style.position = "absolute";
-          button.style.backgroundColor = "rgba(0, 0, 0, 0.35)";
-          button.style.color = "white";
-          button.style.border = "none";
-          button.style.cursor = "pointer";
-          button.style.zIndex = "1000";
-          button.style.fontSize = "16px";
-          button.style.fontWeight = "500";
-          return button;
-        };
-
         player.current = videojs(videoNode.current, {
           autoplay: true,
           controls: true,
           responsive: true,
           fluid: false,
           preload: "auto",
-          playbackRates: [0.5, 1, 1.5, 2],
+          playbackRates: [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2],
           sources: [
             {
               src: videoUrl,
@@ -55,35 +55,12 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro, next }) => {
                 },
               ]
             : [],
-        });
-
-        // Handle quality change events
-        player.current.on("loadedmetadata", () => {
-          const qualityLevels = player.current.qualityLevels();
-          
-          qualityLevels.on("change", () => {
-            const currentTime = player.current.currentTime();
-            
-            // Store current subtitle track
-            const tracks = player.current.textTracks();
-            const activeTrack = Array.from(tracks).find(track => 
-              track.mode === 'showing' || track.mode === 'hidden'
-            );
-            
-            if (activeTrack) {
-              // Disable and re-enable the track to force resync
-              const previousMode = activeTrack.mode;
-              activeTrack.mode = 'disabled';
-              
-              // Small timeout to ensure the track has time to properly reset
-              setTimeout(() => {
-                activeTrack.mode = previousMode;
-                
-                // Ensure we're at the correct timestamp
-                player.current.currentTime(currentTime);
-              }, 100);
-            }
-          });
+          html5: {
+            hls: {
+              enableLowInitialPlaylist: true,
+              smoothQualityChange: true,
+            },
+          },
         });
 
         const createAndAppendButtons = () => {
@@ -100,27 +77,17 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro, next }) => {
           );
 
           if (next) {
-            nextEpisodeButton.current = document.createElement("button");
-            nextEpisodeButton.current.className =
-              "absolute z-50 px-5 py-3 rounded-md hover:bg-opacity-100 bottom-14 right-12 bg-opacity-70 ";
-            nextEpisodeButton.current.innerHTML = "Next Episode";
-            nextEpisodeButton.current.style.display = "none";
-            nextEpisodeButton.current.style.position = "absolute";
-            nextEpisodeButton.current.style.backgroundColor = "rgba(0, 0, 0, 0.35)";
-            nextEpisodeButton.current.style.color = "white";
-            nextEpisodeButton.current.style.border = "none";
-            nextEpisodeButton.current.style.cursor = "pointer";
-            nextEpisodeButton.current.style.zIndex = "1000";
-            nextEpisodeButton.current.style.fontSize = "16px";
-            nextEpisodeButton.current.style.fontWeight = "500"
-
-            nextEpisodeButton.current.onclick = () => {
-              console.log("Navigating to next episode:", next);
-              if (next) {
-                navigate(`/watch/${next}`);
-              }
-            };
-
+            nextEpisodeButton.current = createButton(
+              "Next Episode",
+              () => {
+                if (next) {
+                  // Save current timestamp before navigating
+                  localStorage.setItem(`video-progress-${videoUrl}`, player.current.currentTime());
+                  navigate(`/watch/${next}`);
+                }
+              },
+              "bottom-14 right-12"
+            );
             container.appendChild(nextEpisodeButton.current);
           }
 
@@ -129,28 +96,40 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro, next }) => {
 
         createAndAppendButtons();
 
+        // Handle button visibility with smooth transitions
         const updateButtonVisibility = () => {
           const currentTime = player.current.currentTime();
           
-          if (skipIntroButton.current) {
-            if (intro && currentTime >= intro.start && currentTime < intro.end) {
-              skipIntroButton.current.style.display = "block";
-            } else {
-              skipIntroButton.current.style.display = "none";
+          const updateButtonDisplay = (button, shouldShow) => {
+            if (button) {
+              button.style.transition = 'opacity 0.3s ease';
+              button.style.opacity = shouldShow ? '1' : '0';
+              setTimeout(() => {
+                button.style.display = shouldShow ? 'block' : 'none';
+              }, shouldShow ? 0 : 300);
             }
-          }
+          };
 
-          if (nextEpisodeButton.current) {
-            if (outro && currentTime >= outro.start && currentTime < outro.end) {
-              nextEpisodeButton.current.style.display = "block";
-            } else {
-              nextEpisodeButton.current.style.display = "none";
-            }
-          }
+          updateButtonDisplay(
+            skipIntroButton.current, 
+            intro && currentTime >= intro.start && currentTime < intro.end
+          );
+
+          updateButtonDisplay(
+            nextEpisodeButton.current,
+            outro && currentTime >= outro.start && currentTime < outro.end
+          );
         };
 
         const handleFullscreenChange = () => {
           if (player.current.isFullscreen()) {
+            // Prevent screen sleep in fullscreen
+            if ('wakeLock' in navigator) {
+              navigator.wakeLock.request('screen').catch(err => 
+                console.warn('Wake Lock error:', err)
+              );
+            }
+            
             if (screen.orientation && screen.orientation.lock) {
               screen.orientation.lock("landscape").catch((error) => {
                 console.warn("Failed to lock orientation:", error);
@@ -167,43 +146,71 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro, next }) => {
         const handleKeyPress = (e) => {
           if (!player.current || document.activeElement.tagName === "INPUT") return;
 
-          switch (e.code) {
-            case "Space":
+          const actions = {
+            Space: () => {
               e.preventDefault();
               player.current.paused() ? player.current.play() : player.current.pause();
-              break;
-            case "ArrowLeft":
+            },
+            ArrowLeft: () => {
               e.preventDefault();
-              player.current.currentTime(Math.max(0, player.current.currentTime() - 5));
-              break;
-            case "ArrowRight":
+              const skipAmount = e.shiftKey ? 10 : 5;
+              player.current.currentTime(Math.max(0, player.current.currentTime() - skipAmount));
+            },
+            ArrowRight: () => {
               e.preventDefault();
-              player.current.currentTime(player.current.currentTime() + 5);
-              break;
-            case "ArrowUp":
+              const skipAmount = e.shiftKey ? 10 : 5;
+              player.current.currentTime(player.current.currentTime() + skipAmount);
+            },
+            ArrowUp: () => {
               e.preventDefault();
-              player.current.volume(Math.min(1, player.current.volume() + 0.1));
-              break;
-            case "ArrowDown":
+              player.current.volume(Math.min(1, player.current.volume() + (e.shiftKey ? 0.2 : 0.1)));
+            },
+            ArrowDown: () => {
               e.preventDefault();
-              player.current.volume(Math.max(0, player.current.volume() - 0.1));
-              break;
-            default:
-              break;
+              player.current.volume(Math.max(0, player.current.volume() - (e.shiftKey ? 0.2 : 0.1)));
+            },
+            KeyM: () => {
+              e.preventDefault();
+              player.current.muted(!player.current.muted());
+            },
+            KeyF: () => {
+              e.preventDefault();
+              player.current.isFullscreen() ? player.current.exitFullscreen() : player.current.requestFullscreen();
+            }
+          };
+
+          if (actions[e.code]) {
+            actions[e.code]();
           }
         };
+
+        // Save progress periodically
+        const saveProgressInterval = setInterval(() => {
+          if (player.current) {
+            localStorage.setItem(`video-progress-${videoUrl}`, player.current.currentTime());
+          }
+        }, 5000);
+
+        const savedProgress = localStorage.getItem(`video-progress-${videoUrl}`);
+        if (savedProgress) {
+          player.current.currentTime(parseFloat(savedProgress));
+        }
 
         player.current.on("fullscreenchange", handleFullscreenChange);
         player.current.on("timeupdate", updateButtonVisibility);
         document.addEventListener("keydown", handleKeyPress);
+        
         player.current.on('ended', () => {
           if (next) {
-            console.log("Video ended, navigating to next episode:", next);
             navigate(`/watch/${next}`);
           }
         });
 
         return () => {
+          clearInterval(saveProgressInterval);
+          if (player.current) {
+            localStorage.setItem(`video-progress-${videoUrl}`, player.current.currentTime());
+          }
           document.removeEventListener("keydown", handleKeyPress);
           player.current.dispose();
         };
@@ -211,7 +218,7 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro, next }) => {
 
       initializePlayer();
     }
-  }, [videoUrl, subtitleUrl, intro, outro, next, navigate]);
+  }, [videoUrl, subtitleUrl, intro, outro, next, navigate, createButton]);
 
   return (
     <div className="video-container relative h-[200px] md:h-[550px] md:w-[95%] md:pl-16 mt-[-10px]">

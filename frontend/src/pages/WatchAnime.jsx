@@ -3,7 +3,6 @@ import { useState, useEffect, useCallback } from "react";
 import EpisodeList from "../components/EpisodeList";
 import VideoPlayer from "../components/Player";
 import { Loader } from "../components/Spinner";
-
 import ScrollToTop from "../components/scrollToTop";
 import { RWebShare } from "react-web-share";
 
@@ -60,6 +59,7 @@ export const Watch = () => {
     try {
       const isDub = fullPath.includes("category=dub");
 
+      // Fetch sub and dub categories in parallel
       const [subResponse, dubResponse] = await Promise.all([
         fetch(
           `${animeKey}episode/sources?animeEpisodeId=${fullPath}&category=sub`
@@ -69,30 +69,58 @@ export const Watch = () => {
         ),
       ]);
 
-      if (!subResponse.ok) throw new Error("Primary server failed");
+      let videoData;
+      let selectedSubtitle = null;
+      let introData = null;
+      let outroData = null;
 
-      const subData = await subResponse.json();
-      const dubData = await dubResponse.json();
-      setIntro(subData.data.intro);
-      setOutro(subData.data.outro);
+      // Handle dub response if available
+      if (dubResponse.ok) {
+        const dubData = await dubResponse.json();
+        if (isDub && dubData?.data?.sources?.length) {
+          videoData = dubData;
+        }
+      }
 
-      if (!subData.data?.sources?.length) throw new Error("No video sources available");
+      // Handle sub response
+      if (subResponse.ok) {
+        const subData = await subResponse.json();
+        if (!videoData) {
+          videoData = subData;
+          selectedSubtitle = getSelectedSubtitle(subData.data.tracks);
+        }
+        introData = subData.data.intro;
+        outroData = subData.data.outro;
+      }
 
-      const selectedSubtitle = isDub
-        ? null
-        : getSelectedSubtitle(subData.data.tracks);
+      // If both sub and dub fail, fallback to raw
+      if (!videoData) {
+        const rawResponse = await fetch(
+          `${animeKey}episode/sources?animeEpisodeId=${fullPath}&category=raw`
+        );
+        if (!rawResponse.ok) {
+          throw new Error("All video source categories failed");
+        }
+        const rawData = await rawResponse.json();
+        videoData = rawData;
+        selectedSubtitle = getSelectedSubtitle(rawData.data.tracks);
+        introData = rawData.data.intro; // Handle intro for raw
+        outroData = rawData.data.outro; // Handle outro for raw
+      }
 
-      const videoSource =
-        isDub && dubData.data?.sources?.length
-          ? dubData.data.sources[0].url
-          : subData.data.sources[0].url;
+      if (!videoData.data?.sources?.length) {
+        throw new Error("No video sources available");
+      }
 
+      // Update state with fetched data
+      setIntro(introData);
+      setOutro(outroData);
       setState((prev) => ({
         ...prev,
-        videoUrl: videoSource,
+        videoUrl: videoData.data.sources[0].url,
         subtitleUrl: selectedSubtitle,
-        dubAvailable: dubResponse.ok && !!dubData.data?.sources?.length,
-        isDub: isDub && dubResponse.ok && !!dubData.data?.sources?.length,
+        dubAvailable: !!dubResponse.ok,
+        isDub: isDub && !!dubResponse.ok,
       }));
     } catch (error) {
       console.error("Error fetching video or subtitles:", error);
@@ -100,14 +128,6 @@ export const Watch = () => {
       setState((prev) => ({ ...prev, videoLoading: false }));
     }
   }, [fullPath]);
-
-  useEffect(() => {
-    fetchEpisodes();
-  }, [fetchEpisodes]);
-
-  useEffect(() => {
-    fetchVideo();
-  }, [fetchVideo]);
 
   const getSelectedSubtitle = (tracks = []) => {
     if (tracks.length === 0) return null;
@@ -119,6 +139,14 @@ export const Watch = () => {
       tracks[0]?.file
     );
   };
+
+  useEffect(() => {
+    fetchEpisodes();
+  }, [fetchEpisodes]);
+
+  useEffect(() => {
+    fetchVideo();
+  }, [fetchVideo]);
 
   const handleRangeChange = (e) => {
     const totalRanges = Math.ceil(state.episodes.length / ITEMS_PER_PAGE);
@@ -149,12 +177,11 @@ export const Watch = () => {
 
   return (
     <div className="min-h-screen bg-black">
-
       <div className="flex flex-col lg:flex-row lg:space-x-4 py-12 md:px-4">
         <div className="w-full lg:w-[80%] min-h-[300px]">
-        <h1 className="pt-12 pb-8 text-center text-xl md:text-3xl font-bold text-white px-16 md:ml-32">
-        {state.title}
-      </h1>
+          <h1 className="pt-12 pb-8 text-center text-xl md:text-3xl font-bold text-white px-16 md:ml-32">
+            {state.title}
+          </h1>
           {state.videoLoading ? (
             <div className="flex items-center justify-center h-full">
               <Loader />
@@ -171,7 +198,7 @@ export const Watch = () => {
         </div>
 
         <div className="w-full lg:w-auto pt-16 sm:pt-24">
-          <div className="pb-8 md:pb-4 sm:ml-0 gap-4 mt-[-50px] flex  justify-center">
+          <div className="pb-8 md:pb-4 sm:ml-0 gap-4 mt-[-50px] flex justify-center">
             {state.dubAvailable && (
               <button
                 onClick={handleAudioToggle}
@@ -180,11 +207,9 @@ export const Watch = () => {
                 Switch {state.isDub ? "Back to Sub" : "to Dub"}
               </button>
             )}
-
-            {/* Share button */}
             <RWebShare
               data={{
-                text: `Check out this episode  ${state.title}\n \n${window.location.href}`,
+                text: `Check out this episode ${state.title}\n \n${window.location.href}`,
                 url: window.location.href,
                 title: state.title,
               }}

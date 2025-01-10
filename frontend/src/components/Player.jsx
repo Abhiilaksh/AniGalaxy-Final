@@ -10,6 +10,9 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro, next }) => {
   const skipIntroButton = useRef(null);
   const nextEpisodeButton = useRef(null);
   const navigate = useNavigate();
+  const lastStableTime = useRef(null);
+  const isUserSeeking = useRef(false);
+  const playbackStabilityTimeout = useRef(null);
 
   const createButton = useCallback((text, onClickHandler, additionalClasses) => {
     const button = document.createElement("button");
@@ -59,8 +62,77 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro, next }) => {
             hls: {
               enableLowInitialPlaylist: true,
               smoothQualityChange: true,
+              maxMaxBufferLength: 30,
+              levelLoadingTimeOut: 15000,
+              manifestLoadingTimeOut: 15000,
+              levelLoadingMaxRetry: 4,
+              manifestLoadingMaxRetry: 4,
+              levelLoadingRetryDelay: 500,
+              manifestLoadingRetryDelay: 500,
+              backBufferLength: 30
             },
+            nativeTextTracks: false
           },
+        });
+
+        // Handle stable playback
+        const handleTimeUpdate = () => {
+          if (!player.current || isUserSeeking.current) return;
+          
+          const currentTime = player.current.currentTime();
+          
+          // Initialize lastStableTime if not set
+          if (lastStableTime.current === null) {
+            lastStableTime.current = currentTime;
+            return;
+          }
+
+          // Check for unexpected backwards jumps
+          if (currentTime < lastStableTime.current && 
+              (lastStableTime.current - currentTime) < 5 && 
+              (lastStableTime.current - currentTime) > 0.1) {
+            
+            // Clear existing timeout
+            if (playbackStabilityTimeout.current) {
+              clearTimeout(playbackStabilityTimeout.current);
+            }
+            
+            // Set timeout to prevent rapid fire corrections
+            playbackStabilityTimeout.current = setTimeout(() => {
+              if (player.current && !player.current.paused()) {
+                player.current.currentTime(lastStableTime.current);
+              }
+            }, 50);
+          } else {
+            // Update last stable time if playback is proceeding normally
+            lastStableTime.current = currentTime;
+          }
+        };
+
+        // Track user-initiated seeking
+        const handleSeeking = () => {
+          isUserSeeking.current = true;
+        };
+
+        const handleSeeked = () => {
+          isUserSeeking.current = false;
+          if (player.current) {
+            lastStableTime.current = player.current.currentTime();
+          }
+        };
+
+        // Add event listeners
+        player.current.on('timeupdate', handleTimeUpdate);
+        player.current.on('seeking', handleSeeking);
+        player.current.on('seeked', handleSeeked);
+        
+        // Reset stability tracking on play/pause
+        player.current.on('play', () => {
+          lastStableTime.current = player.current.currentTime();
+        });
+        
+        player.current.on('pause', () => {
+          lastStableTime.current = player.current.currentTime();
         });
 
         const createAndAppendButtons = () => {
@@ -70,7 +142,12 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro, next }) => {
             "Skip Intro",
             () => {
               if (intro && player.current) {
+                isUserSeeking.current = true;
                 player.current.currentTime(intro.end);
+                setTimeout(() => {
+                  isUserSeeking.current = false;
+                  lastStableTime.current = intro.end;
+                }, 100);
               }
             },
             "bottom-14 right-12"
@@ -81,7 +158,6 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro, next }) => {
               "Next Episode",
               () => {
                 if (next) {
-                  // Save current timestamp before navigating
                   localStorage.setItem(`video-progress-${videoUrl}`, player.current.currentTime());
                   navigate(`/watch/${next}`);
                 }
@@ -123,7 +199,6 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro, next }) => {
 
         const handleFullscreenChange = () => {
           if (player.current.isFullscreen()) {
-            // Prevent screen sleep in fullscreen
             if ('wakeLock' in navigator) {
               navigator.wakeLock.request('screen').catch(err => 
                 console.warn('Wake Lock error:', err)
@@ -153,13 +228,23 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro, next }) => {
             },
             ArrowLeft: () => {
               e.preventDefault();
+              isUserSeeking.current = true;
               const skipAmount = e.shiftKey ? 10 : 5;
               player.current.currentTime(Math.max(0, player.current.currentTime() - skipAmount));
+              setTimeout(() => {
+                isUserSeeking.current = false;
+                lastStableTime.current = player.current.currentTime();
+              }, 100);
             },
             ArrowRight: () => {
               e.preventDefault();
+              isUserSeeking.current = true;
               const skipAmount = e.shiftKey ? 10 : 5;
               player.current.currentTime(player.current.currentTime() + skipAmount);
+              setTimeout(() => {
+                isUserSeeking.current = false;
+                lastStableTime.current = player.current.currentTime();
+              }, 100);
             },
             ArrowUp: () => {
               e.preventDefault();
@@ -207,9 +292,15 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro, next }) => {
         });
 
         return () => {
+          if (playbackStabilityTimeout.current) {
+            clearTimeout(playbackStabilityTimeout.current);
+          }
           clearInterval(saveProgressInterval);
           if (player.current) {
             localStorage.setItem(`video-progress-${videoUrl}`, player.current.currentTime());
+            player.current.off('timeupdate', handleTimeUpdate);
+            player.current.off('seeking', handleSeeking);
+            player.current.off('seeked', handleSeeked);
           }
           document.removeEventListener("keydown", handleKeyPress);
           player.current.dispose();

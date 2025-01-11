@@ -222,7 +222,7 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro, next }) => {
   }, [videoUrl, subtitleUrl, intro, outro, next, navigate, createButton]);
 
   return (
-    <div className="video-container relative h-[200px] md:h-[full] md:w-[95%] md:pl-16 mt-[-10px]">
+    <div className="video-container relative h-[200px] md:h-[550px] md:w-[95%] md:pl-16 mt-[-10px]">
       <video
         ref={videoRef}
         className="plyr-react plyr"

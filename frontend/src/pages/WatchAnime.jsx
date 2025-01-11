@@ -178,7 +178,7 @@ export const Watch = () => {
   return (
     <div className="min-h-screen bg-black">
       <div className="flex flex-col lg:flex-row lg:space-x-4 py-12 md:px-4">
-        <div className="w-full  min-h-[300px]">
+        <div className="w-full  min-h-[300px] pb-32">
           <h1 className="pt-12 pb-8 text-center text-xl md:text-3xl font-bold text-white px-16 md:ml-32">
             {state.title}
           </h1>

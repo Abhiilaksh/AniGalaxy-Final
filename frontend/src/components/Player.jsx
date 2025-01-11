@@ -1,326 +1,237 @@
 import React, { useEffect, useRef, useCallback } from "react";
-import videojs from "video.js";
+import Plyr from "plyr";
+import Hls from "hls.js";
+import "plyr/dist/plyr.css";
 import { useNavigate } from "react-router-dom";
-import "video.js/dist/video-js.css";
-import "videojs-contrib-quality-levels";
 
 const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro, next }) => {
-  const videoNode = useRef(null);
-  const player = useRef(null);
-  const skipIntroButton = useRef(null);
-  const nextEpisodeButton = useRef(null);
+  const videoRef = useRef(null);
+  const playerRef = useRef(null);
+  const hlsRef = useRef(null);
   const navigate = useNavigate();
-  const lastStableTime = useRef(null);
-  const isUserSeeking = useRef(false);
-  const playbackStabilityTimeout = useRef(null);
+  const skipIntroRef = useRef(null);
+  const nextEpisodeRef = useRef(null);
 
   const createButton = useCallback((text, onClickHandler, additionalClasses) => {
     const button = document.createElement("button");
-    button.className = `absolute z-50 px-5 py-3 rounded-md hover:bg-opacity-100 ${additionalClasses}`;
+    button.className = `plyr__control absolute z-50 px-5 py-3 rounded-md ${additionalClasses}`;
     button.innerHTML = text;
     button.onclick = onClickHandler;
     button.style.display = "none";
     button.style.position = "absolute";
-    button.style.backgroundColor = "rgba(0, 0, 0, 0.35)";
+    button.style.backgroundColor = "rgba(0, 0, 0, 0.7)";
     button.style.color = "white";
     button.style.border = "none";
     button.style.cursor = "pointer";
     button.style.zIndex = "1000";
-    button.style.fontSize = "16px";
+    button.style.fontSize = "14px";
     button.style.fontWeight = "500";
     return button;
   }, []);
 
   useEffect(() => {
-    if (videoNode.current) {
-      const initializePlayer = () => {
-        player.current = videojs(videoNode.current, {
-          autoplay: true,
-          controls: true,
-          responsive: true,
-          fluid: false,
-          preload: "auto",
-          playbackRates: [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2],
-          sources: [
-            {
-              src: videoUrl,
-              type: "application/x-mpegURL",
-            },
-          ],
-          tracks: subtitleUrl
-            ? [
-                {
-                  kind: "captions",
-                  label: "English",
-                  src: subtitleUrl,
-                  srclang: "en",
-                  default: true,
-                },
-              ]
-            : [],
-          html5: {
-            hls: {
-              enableLowInitialPlaylist: true,
-              smoothQualityChange: true,
-              maxMaxBufferLength: 30,
-              levelLoadingTimeOut: 15000,
-              manifestLoadingTimeOut: 15000,
-              levelLoadingMaxRetry: 4,
-              manifestLoadingMaxRetry: 4,
-              levelLoadingRetryDelay: 500,
-              manifestLoadingRetryDelay: 500,
-              backBufferLength: 30
-            },
-            nativeTextTracks: false
-          },
+    if (!videoRef.current) return;
+
+    // Initialize Plyr with captions settings
+    playerRef.current = new Plyr(videoRef.current, {
+      controls: [
+        'play-large',
+        'play',
+        'progress',
+        'current-time',
+        'duration',
+        'mute',
+        'volume',
+        'captions',
+        'settings',
+        'fullscreen'
+      ],
+      settings: ['captions', 'quality', 'speed'],
+      speed: { selected: 1, options: [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2] },
+      tooltips: { controls: true, seek: true },
+      keyboard: { focused: true, global: true },
+      captions: { active: true, update: true, language: 'en' }
+    });
+
+    // Setup HLS
+    if (Hls.isSupported()) {
+      hlsRef.current = new Hls({
+        enableWorker: true,
+        lowLatencyMode: true,
+      });
+
+      hlsRef.current.loadSource(videoUrl);
+      hlsRef.current.attachMedia(videoRef.current);
+
+      // Handle HLS manifest loaded
+      hlsRef.current.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
+        // Handle quality levels
+        const availableQualities = hlsRef.current.levels.map((l) => l.height);
+        const qualityOptions = availableQualities.map((quality) => {
+          return { default: quality === availableQualities[0], label: `${quality}p`, value: quality };
         });
+        playerRef.current.quality = qualityOptions;
 
-        // Handle stable playback
-        const handleTimeUpdate = () => {
-          if (!player.current || isUserSeeking.current) return;
-          
-          const currentTime = player.current.currentTime();
-          
-          // Initialize lastStableTime if not set
-          if (lastStableTime.current === null) {
-            lastStableTime.current = currentTime;
-            return;
+        // Enable captions if available
+        if (subtitleUrl) {
+          // Remove existing tracks
+          while (videoRef.current.firstChild) {
+            videoRef.current.removeChild(videoRef.current.firstChild);
           }
 
-          // Check for unexpected backwards jumps
-          if (currentTime < lastStableTime.current && 
-              (lastStableTime.current - currentTime) < 5 && 
-              (lastStableTime.current - currentTime) > 0.1) {
-            
-            // Clear existing timeout
-            if (playbackStabilityTimeout.current) {
-              clearTimeout(playbackStabilityTimeout.current);
+          // Add new track
+          const track = document.createElement('track');
+          track.kind = 'captions';
+          track.label = 'English';
+          track.srclang = 'en';
+          track.src = subtitleUrl;
+          track.default = true;
+          videoRef.current.appendChild(track);
+
+          // Force captions update
+          setTimeout(() => {
+            if (playerRef.current) {
+              playerRef.current.currentTrack = 0;
+              playerRef.current.toggleCaptions(true);
             }
-            
-            // Set timeout to prevent rapid fire corrections
-            playbackStabilityTimeout.current = setTimeout(() => {
-              if (player.current && !player.current.paused()) {
-                player.current.currentTime(lastStableTime.current);
-              }
-            }, 50);
-          } else {
-            // Update last stable time if playback is proceeding normally
-            lastStableTime.current = currentTime;
-          }
-        };
-
-        // Track user-initiated seeking
-        const handleSeeking = () => {
-          isUserSeeking.current = true;
-        };
-
-        const handleSeeked = () => {
-          isUserSeeking.current = false;
-          if (player.current) {
-            lastStableTime.current = player.current.currentTime();
-          }
-        };
-
-        // Add event listeners
-        player.current.on('timeupdate', handleTimeUpdate);
-        player.current.on('seeking', handleSeeking);
-        player.current.on('seeked', handleSeeked);
-        
-        // Reset stability tracking on play/pause
-        player.current.on('play', () => {
-          lastStableTime.current = player.current.currentTime();
-        });
-        
-        player.current.on('pause', () => {
-          lastStableTime.current = player.current.currentTime();
-        });
-
-        const createAndAppendButtons = () => {
-          const container = player.current.el();
-
-          skipIntroButton.current = createButton(
-            "Skip Intro",
-            () => {
-              if (intro && player.current) {
-                isUserSeeking.current = true;
-                player.current.currentTime(intro.end);
-                setTimeout(() => {
-                  isUserSeeking.current = false;
-                  lastStableTime.current = intro.end;
-                }, 100);
-              }
-            },
-            "bottom-14 right-12"
-          );
-
-          if (next) {
-            nextEpisodeButton.current = createButton(
-              "Next Episode",
-              () => {
-                if (next) {
-                  localStorage.setItem(`video-progress-${videoUrl}`, player.current.currentTime());
-                  navigate(`/watch/${next}`);
-                }
-              },
-              "bottom-14 right-12"
-            );
-            container.appendChild(nextEpisodeButton.current);
-          }
-
-          container.appendChild(skipIntroButton.current);
-        };
-
-        createAndAppendButtons();
-
-        // Handle button visibility with smooth transitions
-        const updateButtonVisibility = () => {
-          const currentTime = player.current.currentTime();
-          
-          const updateButtonDisplay = (button, shouldShow) => {
-            if (button) {
-              button.style.transition = 'opacity 0.3s ease';
-              button.style.opacity = shouldShow ? '1' : '0';
-              setTimeout(() => {
-                button.style.display = shouldShow ? 'block' : 'none';
-              }, shouldShow ? 0 : 300);
-            }
-          };
-
-          updateButtonDisplay(
-            skipIntroButton.current, 
-            intro && currentTime >= intro.start && currentTime < intro.end
-          );
-
-          updateButtonDisplay(
-            nextEpisodeButton.current,
-            outro && currentTime >= outro.start && currentTime < outro.end
-          );
-        };
-
-        const handleFullscreenChange = () => {
-          if (player.current.isFullscreen()) {
-            if ('wakeLock' in navigator) {
-              navigator.wakeLock.request('screen').catch(err => 
-                console.warn('Wake Lock error:', err)
-              );
-            }
-            
-            if (screen.orientation && screen.orientation.lock) {
-              screen.orientation.lock("landscape").catch((error) => {
-                console.warn("Failed to lock orientation:", error);
-              });
-            }
-          } else {
-            if (screen.orientation && screen.orientation.unlock) {
-              screen.orientation.unlock();
-            }
-          }
-          updateButtonVisibility();
-        };
-
-        const handleKeyPress = (e) => {
-          if (!player.current || document.activeElement.tagName === "INPUT") return;
-
-          const actions = {
-            Space: () => {
-              e.preventDefault();
-              player.current.paused() ? player.current.play() : player.current.pause();
-            },
-            ArrowLeft: () => {
-              e.preventDefault();
-              isUserSeeking.current = true;
-              const skipAmount = e.shiftKey ? 10 : 5;
-              player.current.currentTime(Math.max(0, player.current.currentTime() - skipAmount));
-              setTimeout(() => {
-                isUserSeeking.current = false;
-                lastStableTime.current = player.current.currentTime();
-              }, 100);
-            },
-            ArrowRight: () => {
-              e.preventDefault();
-              isUserSeeking.current = true;
-              const skipAmount = e.shiftKey ? 10 : 5;
-              player.current.currentTime(player.current.currentTime() + skipAmount);
-              setTimeout(() => {
-                isUserSeeking.current = false;
-                lastStableTime.current = player.current.currentTime();
-              }, 100);
-            },
-            ArrowUp: () => {
-              e.preventDefault();
-              player.current.volume(Math.min(1, player.current.volume() + (e.shiftKey ? 0.2 : 0.1)));
-            },
-            ArrowDown: () => {
-              e.preventDefault();
-              player.current.volume(Math.max(0, player.current.volume() - (e.shiftKey ? 0.2 : 0.1)));
-            },
-            KeyM: () => {
-              e.preventDefault();
-              player.current.muted(!player.current.muted());
-            },
-            KeyF: () => {
-              e.preventDefault();
-              player.current.isFullscreen() ? player.current.exitFullscreen() : player.current.requestFullscreen();
-            }
-          };
-
-          if (actions[e.code]) {
-            actions[e.code]();
-          }
-        };
-
-        // Save progress periodically
-        const saveProgressInterval = setInterval(() => {
-          if (player.current) {
-            localStorage.setItem(`video-progress-${videoUrl}`, player.current.currentTime());
-          }
-        }, 5000);
-
-        const savedProgress = localStorage.getItem(`video-progress-${videoUrl}`);
-        if (savedProgress) {
-          player.current.currentTime(parseFloat(savedProgress));
+          }, 0);
         }
+      });
 
-        player.current.on("fullscreenchange", handleFullscreenChange);
-        player.current.on("timeupdate", updateButtonVisibility);
-        document.addEventListener("keydown", handleKeyPress);
-        
-        player.current.on('ended', () => {
-          if (next) {
-            navigate(`/watch/${next}`);
-          }
-        });
+      // Handle quality changes
+      playerRef.current.on('qualitychange', (e) => {
+        if (hlsRef.current) {
+          hlsRef.current.currentLevel = e.detail.value;
+        }
+      });
+    } else if (videoRef.current.canPlayType('application/vnd.apple.mpegurl')) {
+      // For Safari
+      videoRef.current.src = videoUrl;
+    }
 
-        return () => {
-          if (playbackStabilityTimeout.current) {
-            clearTimeout(playbackStabilityTimeout.current);
+    // Add custom buttons
+    const container = videoRef.current.parentElement;
+    
+    if (intro) {
+      skipIntroRef.current = createButton(
+        "Skip Intro",
+        () => {
+          if (playerRef.current) {
+            playerRef.current.currentTime = intro.end;
           }
-          clearInterval(saveProgressInterval);
-          if (player.current) {
-            localStorage.setItem(`video-progress-${videoUrl}`, player.current.currentTime());
-            player.current.off('timeupdate', handleTimeUpdate);
-            player.current.off('seeking', handleSeeking);
-            player.current.off('seeked', handleSeeked);
-          }
-          document.removeEventListener("keydown", handleKeyPress);
-          player.current.dispose();
-        };
+        },
+        "bottom-14 right-12"
+      );
+      container.appendChild(skipIntroRef.current);
+    }
+
+    if (next) {
+      nextEpisodeRef.current = createButton(
+        "Next Episode",
+        () => {
+          localStorage.setItem(`video-progress-${videoUrl}`, playerRef.current.currentTime);
+          navigate(`/watch/${next}`);
+        },
+        "bottom-14 right-12"
+      );
+      container.appendChild(nextEpisodeRef.current);
+    }
+
+    // Handle button visibility
+    const updateButtonVisibility = () => {
+      if (!playerRef.current) return;
+
+      const currentTime = playerRef.current.currentTime;
+      
+      const updateButtonDisplay = (button, shouldShow) => {
+        if (button) {
+          button.style.transition = 'opacity 0.3s ease';
+          button.style.opacity = shouldShow ? '1' : '0';
+          setTimeout(() => {
+            button.style.display = shouldShow ? 'block' : 'none';
+          }, shouldShow ? 0 : 300);
+        }
       };
 
-      initializePlayer();
+      updateButtonDisplay(
+        skipIntroRef.current,
+        intro && currentTime >= intro.start && currentTime < intro.end
+      );
+
+      updateButtonDisplay(
+        nextEpisodeRef.current,
+        outro && currentTime >= outro.start && currentTime < outro.end
+      );
+    };
+
+    // Handle fullscreen changes
+    const handleFullscreenChange = () => {
+      if (playerRef.current.fullscreen.active) {
+        if ('wakeLock' in navigator) {
+          navigator.wakeLock.request('screen').catch(err => 
+            console.warn('Wake Lock error:', err)
+          );
+        }
+        
+        if (screen.orientation?.lock) {
+          screen.orientation.lock("landscape").catch((error) => {
+            console.warn("Failed to lock orientation:", error);
+          });
+        }
+      } else {
+        if (screen.orientation?.unlock) {
+          screen.orientation.unlock();
+        }
+      }
+    };
+
+    // Save progress periodically
+    const saveProgressInterval = setInterval(() => {
+      if (playerRef.current) {
+        localStorage.setItem(`video-progress-${videoUrl}`, playerRef.current.currentTime);
+      }
+    }, 5000);
+
+    // Restore previous progress
+    const savedProgress = localStorage.getItem(`video-progress-${videoUrl}`);
+    if (savedProgress) {
+      playerRef.current.currentTime = parseFloat(savedProgress);
     }
+
+    // Event listeners
+    playerRef.current.on('timeupdate', updateButtonVisibility);
+    playerRef.current.on('enterfullscreen', handleFullscreenChange);
+    playerRef.current.on('exitfullscreen', handleFullscreenChange);
+    playerRef.current.on('ended', () => {
+      if (next) {
+        navigate(`/watch/${next}`);
+      }
+    });
+
+    // Cleanup
+    return () => {
+      clearInterval(saveProgressInterval);
+      if (playerRef.current) {
+        localStorage.setItem(`video-progress-${videoUrl}`, playerRef.current.currentTime);
+    
+      }
+      if (hlsRef.current) {
+   
+      }
+    };
   }, [videoUrl, subtitleUrl, intro, outro, next, navigate, createButton]);
 
   return (
-    <div className="video-container relative h-[200px] md:h-[550px] md:w-[95%] md:pl-16 mt-[-10px]">
+    <div className="video-container relative h-[200px] md:h-[full] md:w-[95%] md:pl-16 mt-[-10px]">
       <video
-        ref={videoNode}
-        className="video-js vjs-default-skin vjs-big-play-centered"
+        ref={videoRef}
+        className="plyr-react plyr"
         style={{
           height: "100%",
           width: "100%",
           objectFit: "contain",
         }}
+        crossOrigin="anonymous"
       />
     </div>
   );

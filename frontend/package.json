@@ -19,7 +19,7 @@
     "dotenv": "^16.4.7",
     "flowbite-react": "^0.10.2",
     "font-awesome": "^4.7.0",
-    "hls.js": "^1.5.17",
+    "hls.js": "^1.5.19",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.469.0",
     "plyr": "^3.7.8",

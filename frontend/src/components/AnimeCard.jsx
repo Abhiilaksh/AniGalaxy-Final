@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+
 export const AnimeCard = ({ title, image,id }) => {
     return (
         <Link to={`/anime/${id}`}>

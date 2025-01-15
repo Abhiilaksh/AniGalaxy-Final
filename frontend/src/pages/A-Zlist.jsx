@@ -5,6 +5,7 @@ import { AnimeCard } from "../components/AnimeCard";
 import { Loader } from "../components/Spinner";  // Assuming you have a Loader component
 import ScrollToTop from "../components/scrollToTop";
 import { Heading } from "../components/Heading";
+import { motion } from "motion/react"
 const animeKey = import.meta.env.VITE_ANIME_KEY;
 
 export const AZList = () => {
@@ -50,13 +51,21 @@ export const AZList = () => {
         </div>
       ) : (
         <>        
-        <div className="text-center text-3xl ">
-            <Heading label={alpha.toUpperCase()} /></div>
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 pt-4 sm:pt-32 sm:pl-12">
+        <motion.div 
+          initial={{ opacity: 0.2, y: 100 }}
+          transition={{ duration: .15}}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }} className="text-center text-3xl ">
+            <Heading label={alpha.toUpperCase()} /></motion.div>
+          <motion.div 
+          initial={{ opacity: 0.2, y: 100 }}
+          transition={{ duration: .5}}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }} className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 pt-4 sm:pt-32 sm:pl-12">
             {animeData.map((anime) => (
               <AnimeCard key={anime.id} title={anime.name} image={anime.poster} id={anime.id} />
             ))}
-          </div>
+          </motion.div>
           {pageCount < totalPageCount && (
             <div className="text-center">
               <button

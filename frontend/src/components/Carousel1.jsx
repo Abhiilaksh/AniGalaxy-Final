@@ -2,12 +2,16 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Carousel, Typography, Button } from '@material-tailwind/react';
 import { Play, Info } from 'lucide-react';
-
+import { motion } from "motion/react"
 const SlideShow = ({ animeData = [] }) => {
   const slides = animeData.slice(1, 10);
 
   return (
-    <div className="relative w-full">
+
+    <motion.div initial={{ opacity: 0.2, y: 100 }}
+      transition={{ duration: .75}}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }} className="relative w-full" >
       <Carousel
         loop
         autoplay
@@ -94,7 +98,7 @@ const SlideShow = ({ animeData = [] }) => {
           </div>
         ))}
       </Carousel>
-    </div>
+    </motion.div>
   );
 };
 

@@ -1,6 +1,7 @@
 import { AnimeCard } from "./AnimeCard";
 import { Heading } from "./Heading";
 import { useRef, useEffect } from "react";
+import { motion } from "motion/react"
 
 export const AnimeSection = ({ title, animeData }) => {
   const scrollRef = useRef(null);
@@ -41,7 +42,12 @@ export const AnimeSection = ({ title, animeData }) => {
   }, []);
 
   return (
-    <div className="mt-4 relative">
+    <motion.div 
+    initial={{ opacity: 0.2, y: 100 }}
+      transition={{ duration: .75}}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+    className="mt-4 relative">
       <div className="ml-4"><Heading label={title} /></div>
       {/* Left Button */}
       <button         
@@ -72,6 +78,6 @@ export const AnimeSection = ({ title, animeData }) => {
       >
         &#8594;
       </button>
-    </div>
+    </motion.div>
   );
 };

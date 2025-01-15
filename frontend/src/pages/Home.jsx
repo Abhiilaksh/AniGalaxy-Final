@@ -3,6 +3,7 @@ import SlideShow from "../components/Carousel1";
 import { Loader } from "../components/Spinner";
 import ScrollToTop from "../components/scrollToTop";
 import { AnimeSection } from "../components/AnimeSection";
+import { motion } from "motion/react"
 const animeKey = import.meta.env.VITE_ANIME_KEY;
 
 export const Home = () => {

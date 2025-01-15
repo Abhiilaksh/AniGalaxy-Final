@@ -9,6 +9,7 @@ import { Loader } from "../components/Spinner";
 import { AnimeDiscussion } from "../components/AnimeDiscussion";
 import ScrollToTop from "../components/scrollToTop";
 import AdBanner from "../components/AdBanner";
+import { motion } from "motion/react"
 
 export const AnimeInfo = () => {
   const { id } = useParams();
@@ -127,7 +128,11 @@ export const AnimeInfo = () => {
         <Loader />
       ) : (
         <>
-          <div className="relative w-full h-[600px] rounded-lg">
+          <motion.div 
+          initial={{ opacity: 0.2, y: 100 }}
+          transition={{ duration: .5}}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}className="relative w-full h-[600px] rounded-lg">
             <div
               className="absolute inset-0 bg-cover bg-center filter blur-lg"
               style={{ backgroundImage: `url(${animeData.poster})` }}
@@ -225,19 +230,31 @@ export const AnimeInfo = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
 
-          <div className="pl-8 pt-8 h-[400px] overflow-auto scrollbar-thin scrollbar-thumb-gray-800 scrollbar-track-gray-900">
+          <motion.div 
+          initial={{ opacity: 0.2, y: 100 }}
+          transition={{ duration: .5}}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }} className="pl-8 pt-8 h-[400px] overflow-auto scrollbar-thin scrollbar-thumb-gray-800 scrollbar-track-gray-900">
             <AnimeDiscussion animeId={id} />
-          </div>
+          </motion.div>
           {/* <AdBanner/> */}
           <ScrollToTop />
-          <div>
+          <motion.div 
+          initial={{ opacity: 0.2, y: 100 }}
+          transition={{ duration: .5}}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}>
             <RelatedAnime data={relatedAnime} />
-          </div>
-          <div className="pb-12">
+          </motion.div>
+          <motion.div 
+          initial={{ opacity: 0.2, y: 100 }}
+          transition={{ duration: .5}}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}className="pb-12">
             <RecommendedAnime data={recommendedAnime} />
-          </div>
+          </motion.div>
         </>
       )}
     </>

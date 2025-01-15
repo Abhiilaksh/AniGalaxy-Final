@@ -5,6 +5,7 @@ import VideoPlayer from "../components/Player";
 import { Loader } from "../components/Spinner";
 import ScrollToTop from "../components/scrollToTop";
 import { RWebShare } from "react-web-share";
+import { motion } from "motion/react"
 
 const ITEMS_PER_PAGE = 100;
 const animeKey = import.meta.env.VITE_ANIME_KEY;
@@ -176,7 +177,11 @@ export const Watch = () => {
       : null;
 
   return (
-    <div className="min-h-screen bg-black">
+    <motion.div 
+    initial={{ opacity: 0.2, y: 100 }}
+    transition={{ duration: .5}}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}className="min-h-screen bg-black">
       <div className="flex flex-col lg:flex-row lg:space-x-4 py-12 md:px-4">
         <div className="w-full  min-h-[300px] md:pb-32">
           <h1 className="pt-12 pb-8 text-center text-xl md:text-3xl font-bold text-white px-16 md:ml-32">
@@ -237,6 +242,6 @@ export const Watch = () => {
         </div>
       </div>
       <ScrollToTop />
-    </div>
+    </motion.div>
   );
 };

@@ -28,7 +28,7 @@ export const RelatedAnime = ({ data }) => {
       <div className="pt-12 mb-[-35px] pl-4 md:pl-16">
         <Heading label="Related Anime" size="xl" />
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 pt-16 sm:pt-24 sm:pl-12 pl-2">
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 pt-4 sm:pt-32 sm:pl-2">
         {data.slice(0, visibleCount).map((anime) => (
           <AnimeCard key={anime.id} title={anime.name} image={anime.poster} id={anime.id} />
         ))}

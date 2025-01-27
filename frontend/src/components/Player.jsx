@@ -185,20 +185,11 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro, next }) => {
       }
     };
 
-    // Save progress periodically
-    const saveProgressInterval = setInterval(() => {
-      if (playerRef.current) {
-        localStorage.setItem(`video-progress-${videoUrl}`, playerRef.current.currentTime);
-      }
-    }, 5000);
+    
 
-    // Restore previous progress
-    const savedProgress = localStorage.getItem(`video-progress-${videoUrl}`);
-    if (savedProgress) {
-      playerRef.current.currentTime = parseFloat(savedProgress);
-    }
+    
 
-    // Event listeners
+    
     playerRef.current.on('timeupdate', updateButtonVisibility);
     playerRef.current.on('enterfullscreen', handleFullscreenChange);
     playerRef.current.on('exitfullscreen', handleFullscreenChange);
@@ -208,17 +199,8 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, outro, intro, next }) => {
       }
     });
 
-    // Cleanup
-    return () => {
-      clearInterval(saveProgressInterval);
-      if (playerRef.current) {
-        localStorage.setItem(`video-progress-${videoUrl}`, playerRef.current.currentTime);
+  
     
-      }
-      if (hlsRef.current) {
-   
-      }
-    };
   }, [videoUrl, subtitleUrl, intro, outro, next, navigate, createButton]);
 
   return (

@@ -214,7 +214,7 @@ export const Watch = () => {
             )}
             <RWebShare
               data={{
-                text: `Check out this episode ${state.title}\n \n${window.location.href}`,
+                text: `Check out this episode ${state.title}\n`,
                 url: window.location.href,
                 title: state.title,
               }}

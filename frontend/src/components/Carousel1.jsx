@@ -4,7 +4,7 @@ import { Carousel, Typography, Button } from '@material-tailwind/react';
 import { Play, Info } from 'lucide-react';
 import { motion } from "motion/react"
 const SlideShow = ({ animeData = [] }) => {
-  const slides = animeData.slice(1, 10);
+  const slides = animeData.slice(2, 11);
 
   return (
 

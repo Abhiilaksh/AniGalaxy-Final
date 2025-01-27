@@ -10,7 +10,15 @@ const EpisodeList = ({ episodes, ranges, range, handleRangeChange }) => {
 
   // Effect to update active episode when URL changes
   useEffect(() => {
-    const fullPath = location.pathname.replace("/watch/", "") + location.search; // Remove /watch/ and add query params
+   // Get the current URL's search parameters
+const urlParams = new URLSearchParams(location.search);
+
+// Remove the 'category' parameter if it exists
+urlParams.delete('category');
+
+// Rebuild the full path
+const fullPath = location.pathname.replace("/watch/", "") + (urlParams.toString() ? "?" + urlParams.toString() : "");
+
     console.log('URL changed - Full path:', fullPath);
     setActiveEpisodeId(fullPath); // Set the active episode ID
     console.log('Active episode set to:', fullPath);

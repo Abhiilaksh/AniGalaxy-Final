@@ -1,11 +1,11 @@
-import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { useNavigate, useParams, useLocation, Link } from "react-router-dom";
 import { useState, useEffect, useCallback } from "react";
 import EpisodeList from "../components/EpisodeList";
 import VideoPlayer from "../components/Player";
 import { Loader } from "../components/Spinner";
 import ScrollToTop from "../components/scrollToTop";
 import { RWebShare } from "react-web-share";
-import { motion } from "motion/react"
+import { motion } from "motion/react";
 
 const ITEMS_PER_PAGE = 100;
 const animeKey = import.meta.env.VITE_ANIME_KEY;
@@ -27,6 +27,7 @@ export const Watch = () => {
   });
   const [intro, setIntro] = useState({});
   const [outro, setOutro] = useState({});
+  const [error, setError] = useState(null);
 
   const fullPath = location.pathname.replace("/watch/", "") + location.search;
 
@@ -49,6 +50,9 @@ export const Watch = () => {
       }));
     } catch (error) {
       console.error("Error fetching episodes:", error);
+      setError(
+        "Unable to fetch anime data. The server might be down or experiencing issues. Please try again later."
+      );
     }
   }, [anime, fullPath]);
 
@@ -105,8 +109,8 @@ export const Watch = () => {
         const rawData = await rawResponse.json();
         videoData = rawData;
         selectedSubtitle = getSelectedSubtitle(rawData.data.tracks);
-        introData = rawData.data.intro; // Handle intro for raw
-        outroData = rawData.data.outro; // Handle outro for raw
+        introData = rawData.data.intro;
+        outroData = rawData.data.outro;
       }
 
       if (!videoData.data?.sources?.length) {
@@ -125,6 +129,9 @@ export const Watch = () => {
       }));
     } catch (error) {
       console.error("Error fetching video or subtitles:", error);
+      setError(
+        "Unable to fetch anime data. The server might be down or experiencing issues. Please try again later."
+      );
     } finally {
       setState((prev) => ({ ...prev, videoLoading: false }));
     }
@@ -176,14 +183,54 @@ export const Watch = () => {
       ? state.episodes[currentEpisodeIndex + 1]
       : null;
 
+  // If an error occurs, display the error message
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[50vh] p-4 pt-64">
+        <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-md max-w-2xl w-full">
+          <div className="flex items-center">
+            <div className="flex-shrink-0">
+              <svg
+                className="h-8 w-8 text-red-500"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12" y2="16" />
+              </svg>
+            </div>
+            <div className="ml-4">
+              <h3 className="text-lg font-medium text-red-700">Server Error</h3>
+              <p className="mt-1 text-red-600">
+                Unable to fetch anime data. The server might be down or experiencing issues. Please try again later.
+              </p>
+              <Link
+                to="/"
+                className="mt-4 inline-block px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+              >
+                Return to Home
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <motion.div 
-    initial={{ opacity: 0.2, y: 100 }}
-    transition={{ duration: .5}}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true }}className="min-h-screen bg-black">
+    
+    <motion.div
+      initial={{ opacity: 0.2, y: 100 }}
+      transition={{ duration: 0.5 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      className="min-h-screen bg-black"
+    >
       <div className="flex flex-col lg:flex-row lg:space-x-4 py-12 md:px-4">
-        <div className="w-full  min-h-[300px] md:pb-32">
+        <div className="w-full min-h-[300px] md:pb-32">
           <h1 className="pt-12 pb-8 text-center text-xl md:text-3xl font-bold text-white px-16 md:ml-32">
             {state.title}
           </h1>

@@ -143,9 +143,9 @@ export const Profile = () => {
     }
 
     return (
-        <div className="w-full h-full min-h-screen flex flex-col items-center justify-center">
+        <div className="w-full h-full min-h-screen flex flex-col items-center justify-center mt-16">
             {userData && (
-                <div className="text-center w-full max-w-2xl px-4">
+                <div className="text-center w-full max-w-2xl px-4 ">
                     {editMode ? (
                         <form onSubmit={handleEditProfile} className="space-y-4 ">
                             <div>
@@ -243,7 +243,7 @@ export const Profile = () => {
                                     )}
                                     <ul
                                         ref={scrollContainerRef}
-                                        className="flex overflow-x-auto mt-4 scrollbar-hide no-scrollbar  gap-4"
+                                        className="flex overflow-x-auto mt-4 scrollbar-hide no-scrollbar  gap-4 "
                                     >
                                         {favouriteAnimes.map((anime) => ( 
                                             <li key={anime.id}>

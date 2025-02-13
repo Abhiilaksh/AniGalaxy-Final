@@ -6,7 +6,7 @@ import { motion } from "motion/react";
 
 // Skeleton Components
 const SkeletonSlide = () => (
-  <div className="w-full h-[400px] md:h-[600px] bg-gray-800/40 animate-pulse rounded-lg overflow-hidden">
+  <div className="w-full h-[400px] md:h-[600px] bg-black animate-pulse rounded-lg overflow-hidden">
     <div className="h-full w-full flex items-end p-8">
       <div className="space-y-4 w-full max-w-2xl">
         <div className="h-8 bg-gray-600/40 rounded-lg w-3/4" />

@@ -1,9 +1,55 @@
 import React, { useEffect, useState } from "react";
 import SlideShow from "../components/Carousel1";
-import { Loader } from "../components/Spinner";
 import ScrollToTop from "../components/scrollToTop";
 import { AnimeSection } from "../components/AnimeSection";
-import { motion } from "motion/react"
+import { motion } from "motion/react";
+
+// Skeleton Components
+const SkeletonSlide = () => (
+  <div className="w-full h-[400px] md:h-[600px] bg-gray-800/40 animate-pulse rounded-lg overflow-hidden">
+    <div className="h-full w-full flex items-end p-8">
+      <div className="space-y-4 w-full max-w-2xl">
+        <div className="h-8 bg-gray-600/40 rounded-lg w-3/4" />
+        <div className="h-4 bg-gray-600/40 rounded-lg w-1/2" />
+        <div className="h-4 bg-gray-600/40 rounded-lg w-full" />
+        <div className="h-4 bg-gray-600/40 rounded-lg w-5/6" />
+        <div className="flex gap-4 mt-6">
+          <div className="h-10 w-32 bg-gray-600/40 rounded-lg" />
+          <div className="h-10 w-32 bg-gray-600/40 rounded-lg" />
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+const SkeletonAnimeCard = () => (
+  <div className="flex flex-col space-y-2">
+    <div className="w-full h-64 bg-gray-800/40 animate-pulse rounded-lg" />
+    <div className="h-4 bg-gray-800/40 animate-pulse rounded w-3/4 mx-auto" />
+  </div>
+);
+
+const SkeletonAnimeSection = ({ title }) => (
+  <div className="container mx-auto px-4 my-8">
+    <div className="mb-6">
+      <div className="h-6 bg-gray-800/40 animate-pulse rounded w-48" />
+    </div>
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+      {[...Array(12)].map((_, index) => (
+        <SkeletonAnimeCard key={index} />
+      ))}
+    </div>
+  </div>
+);
+
+const HomePageSkeleton = () => (
+  <div className="bg-black min-h-screen md:pt-0 pt-[55px] pb-12">
+    <SkeletonSlide />
+    <SkeletonAnimeSection title="Trending Anime" />
+    <SkeletonAnimeSection title="Latest Episodes" />
+  </div>
+);
+
 const animeKey = import.meta.env.VITE_ANIME_KEY;
 
 export const Home = () => {
@@ -30,7 +76,6 @@ export const Home = () => {
         
         const data = await response.json();
         
-        // Check if we have valid data
         if (!data?.data?.spotlightAnimes || !data?.data?.trendingAnimes || !data?.data?.latestEpisodeAnimes) {
           throw new Error('Invalid data structure received');
         }
@@ -49,11 +94,7 @@ export const Home = () => {
   }, []);
 
   if (loading) {
-    return (
-      <div className="bg-black min-h-screen md:pt-0 pt-[55px] pb-12">
-        <Loader />
-      </div>
-    );
+    return <HomePageSkeleton />;
   }
 
   if (error) {

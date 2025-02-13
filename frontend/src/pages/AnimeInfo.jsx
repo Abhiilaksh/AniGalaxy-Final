@@ -34,6 +34,41 @@ const ServerError = () => (
     </div>
   </div>
 );
+const SkeletonAnimeSection = () => (
+  <motion.div
+    initial={{ opacity: 0.2, y: 100 }}
+    transition={{ duration: 0.5 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    className="relative w-full h-[600px] rounded-lg bg-black animate-pulse"
+  >
+    {/* Blurred Background */}
+    <div className="absolute inset-0 bg-black blur-lg"></div>
+
+    {/* Overlay */}
+    <div className="absolute inset-0 bg-black/[.35] bg-opacity-20 flex flex-col md:flex-row text-white pt-10 md:pt-[100px] px-4 md:px-16 gap-8 md:gap-16">
+      {/* Image Section */}
+      <div className="w-full md:w-[350px] flex justify-center md:pt-[50px] pt-8">
+        <div className="rounded-lg w-[150px] md:w-[250px] sm:h-[300px] bg-gray-900 animate-pulse"></div>
+      </div>
+
+      {/* Info Section */}
+      <div className="flex flex-col w-full mt-[-40px] sm:mt-0">
+        <div className="w-full md:w-[680px]">
+          <div className="h-8 bg-gray-700 animate-pulse rounded w-48 mb-4"></div>
+          <div className="h-4 bg-gray-700 animate-pulse rounded w-72 mb-2"></div>
+          <div className="h-4 bg-gray-700 animate-pulse rounded w-60"></div>
+        </div>
+      </div>
+    </div>
+  </motion.div>
+);
+
+const PageSkeleton = () => (
+  <div className="bg-black min-h-screen md:pt-0 pt-[55px] pb-12">
+    <SkeletonAnimeSection />
+  </div>
+);
 
 export const AnimeInfo = () => {
   const { id } = useParams();
@@ -153,14 +188,11 @@ export const AnimeInfo = () => {
       setLoadingFav(false);
     }
   };
-
   if (loading) {
-    return (
-      <div className="min-h-screen w-full bg-black">
-        <Loader />
-      </div>
-    );
+    return <PageSkeleton />;
   }
+
+  
 
   if (error) {
     return (

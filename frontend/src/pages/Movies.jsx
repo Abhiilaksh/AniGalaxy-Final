@@ -34,11 +34,36 @@ export const Movies = () => {
       window.scrollTo({ top: 0, behavior: "smooth" }); // Scroll to the top
     }
   };
+  const SkeletonAnimeGrid = () => {
+    return (
+      <motion.div
+        initial={{ opacity: 0.2, y: 100 }}
+        transition={{ duration: 0.5 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 pt-4 sm:pt-32 sm:pl-2"
+      >
+        {Array(10) // Render 10 skeleton cards for a placeholder effect
+          .fill(0)
+          .map((_, index) => (
+            <div
+              key={index}
+              className="w-full h-[350px] bg-gray-900 animate-pulse rounded-lg"
+            ></div>
+          ))}
+      </motion.div>
+    );
+  };
+  
+  const PageSkeleton = () => (
+    <div className="bg-black min-h-screen md:pt-0 pt-[55px] pb-12">
+      <SkeletonAnimeGrid />
+    </div>)
 
   return (
     <>
       {loading ? (
-        <Loader />
+        <PageSkeleton />
       ) : (
         <>
           <motion.div 

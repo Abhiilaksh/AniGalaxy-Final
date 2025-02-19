@@ -11,6 +11,26 @@ const ITEMS_PER_PAGE = 100;
 const animeKey = import.meta.env.VITE_ANIME_KEY;
 
 export const Watch = () => {
+  
+const updateWatchHistory = (animeId, episodeId) => {
+  try {
+    const history = JSON.parse(localStorage.getItem('watchHistory') || '[]');
+  
+    const existingIndex = history.findIndex(item => item.animeId === animeId);
+    
+    if (existingIndex !== -1) {
+      history[existingIndex].episodeId = episodeId;
+    } else {
+      history.push({ animeId, episodeId });
+    }
+    
+    const trimmedHistory = history.slice(-5);
+    localStorage.setItem('watchHistory', JSON.stringify(trimmedHistory));
+  } catch (error) {
+    console.error('Error updating watch history:', error);
+  }
+};
+
   const { anime } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
@@ -219,6 +239,12 @@ export const Watch = () => {
       </div>
     );
   }
+  useEffect(() => {
+    if (anime && fullPath.includes('?ep=')) {
+      const episodeId = fullPath.split('?ep=')[1].split('&')[0];
+      updateWatchHistory(anime, episodeId);
+    }
+  }, [anime, fullPath]);
 
   return (
     

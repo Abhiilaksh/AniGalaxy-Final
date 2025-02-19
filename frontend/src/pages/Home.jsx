@@ -3,6 +3,7 @@ import SlideShow from "../components/Carousel1";
 import ScrollToTop from "../components/scrollToTop";
 import { AnimeSection } from "../components/AnimeSection";
 import { motion } from "motion/react";
+import History from '../components/history';
 
 // Skeleton Components
 const SkeletonSlide = () => (
@@ -127,7 +128,9 @@ export const Home = () => {
 
   return (
     <div className="bg-black md:pt-0 pt-[55px] pb-12">
+     
       <SlideShow animeData={slide} />
+      <History></History>
       <AnimeSection title="Trending Anime" animeData={trending} />
       <AnimeSection title="Latest Episodes" animeData={latest} />
       <ScrollToTop />

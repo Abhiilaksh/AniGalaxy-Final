@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 
-export const AnimeCard = ({ title, image, id }) => {
+export const AnimeCard = ({ title, image, id ,link}) => {
   const [hoverInfo, setHoverInfo] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
@@ -41,7 +41,7 @@ export const AnimeCard = ({ title, image, id }) => {
   };
 
   return (
-    <Link to={`/anime/${id}`} className="block">
+    <Link to={link?link:`/anime/${id}`} className="block">
       <div
         className="relative group flex flex-col justify-center items-center p-4 hover:scale-105 transition-all duration-300 w-full sm:w-56 md:w-64 lg:w-72 cursor-pointer"
         onMouseEnter={handleMouseEnter}

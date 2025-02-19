@@ -42,24 +42,24 @@ const SlideShow = ({ animeData = [] }) => {
               className="absolute inset-0 bg-cover bg-center"
               style={{
                 backgroundImage: `url(${anime.poster})`,
-                filter: 'blur(2px)',
+                
                 
               }}
             />
 
-            {/* Gradient Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent" />
+           
+            <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/20 to-transparent" />
 
             {/* Content Container */}
             <div className="relative h-full flex items-center">
               <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="max-w-2xl">
                   {/* Title */}
-                  <h2 className="text-xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-white mb-4 line-clamp-2 text-center sm:text-left">
+                  <h2 className="text-xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-white mb-8 sm:mb-32 line-clamp-2 text-center sm:text-left">
                     {anime.name}
                   </h2>
 
-                  {/* Description - Hidden on mobile */}
+                  {/* Description - Hidden on mobile
                   <div className="hidden sm:block mb-8">
                     <div 
                       className="text-white/90 text-sm sm:text-base lg:text-lg prose line-clamp-3"
@@ -67,7 +67,7 @@ const SlideShow = ({ animeData = [] }) => {
                         __html: anime.description 
                       }}
                     />
-                  </div>
+                  </div> */}
 
                   {/* Action Buttons */}
                   <div className="flex gap-4 justify-center sm:justify-start">

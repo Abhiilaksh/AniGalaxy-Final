@@ -48,14 +48,14 @@ const SlideShow = ({ animeData = [] }) => {
             />
 
            
-            <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/20 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/20 to-transparent" />
 
             {/* Content Container */}
             <div className="relative h-full flex items-center">
               <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="max-w-2xl">
                   {/* Title */}
-                  <h2 className="text-xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-white mb-8 sm:mb-32 line-clamp-2 text-center sm:text-left">
+                  <h2 className="text-xl sm:text-3xl lg:text-4xl xl:text-4xl font-bold text-white mb-4 sm:mb-12 line-clamp-2 text-center sm:text-left">
                     {anime.name}
                   </h2>
 
@@ -74,9 +74,11 @@ const SlideShow = ({ animeData = [] }) => {
                     <Link to={`/watch/${anime.id}`}>
                       <Button
                         size="lg"
-                        className="flex items-center gap-2 bg-pink-100 hover:bg-pink-200 transition-colors text-black font-bold"
-                      >
-                        <Play size={20} />
+                        
+                        className="flex items-center gap-2 border-white text-white hover:bg-black/50 transition-colors p-4 bg-black/20 sm: bg-black/55"
+                         >
+                        <Play size={20} className='block sm:hidden' />
+
                         <span className="hidden sm:inline">Watch Now</span>
                       </Button>
                     </Link>
@@ -84,10 +86,10 @@ const SlideShow = ({ animeData = [] }) => {
                     <Link to={`/anime/${anime.id}`}>
                       <Button
                         size="lg"
-                        variant="outlined"
-                        className="flex items-center gap-2 border-white text-white hover:bg-white/10 transition-colors"
+                        
+                        className="flex items-center gap-2 border-white text-white hover:bg-black/50 transition-colors p-4 bg-black/20 sm: bg-black/55"
                       >
-                        <Info size={20} />
+                        <Info size={20} className='block sm:hidden text-white ' />
                         <span className="hidden sm:inline">More Info</span>
                       </Button>
                     </Link>
